@@ -267,6 +267,7 @@
         .contact-item { text-decoration: none; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 15px; transition: 0.4s; min-width: 140px; }
         .contact-item i { font-size: 3em; color: var(--accent); }
 </style>
+
 </head>
 <body style="margin: 0; padding: 0; background-color: #050507; color: #e0e0e0; font-family: 'Inter', sans-serif; line-height: 1.6; scroll-behavior: smooth;">
 
@@ -315,6 +316,16 @@
                 color: var(--accent);
                 background: rgba(74, 144, 226, 0.1);
             }
+			@media (max-width: 768px) {
+            #galeria, 
+            #o-mnie, 
+            #historia, 
+            #sprzet, 
+            #kontakt {
+                padding-top: 140px !important;
+                scroll-margin-top: 140px;
+            }
+        }
         </style>
         <button class="filter-btn active" onclick="filterGallery('all', this)">Wszystkie</button>
         <button class="filter-btn" onclick="filterGallery('uklad-sloneczny', this)">Układ Słoneczny</button>

@@ -208,46 +208,47 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: black !important;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.98);
             z-index: 9999;
-            margin: 0;
-            padding: 0;
-            /* Flexbox dla standardowego widoku */
             justify-content: center;
             align-items: center;
-            overflow: auto;
-        }
-
-        /* To rozwiązuje problem przesunięcia w lewo w trybie Fullscreen na telefonach */
-        #lightbox:fullscreen {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
+            overflow: hidden; /* Standardowo zablokowane przewijanie */
         }
 
         #lightbox img {
-            max-width: 100%;
-            max-height: 100vw;
-			left: 0;
+            max-width: 95%;
+            max-height: 95vh;
             width: auto;
             height: auto;
             object-fit: contain;
-            display: block;
-            margin: auto; /* Kluczowe dla centrowania we Flexbox */
-            transition: transform 0.2s ease-out;
+            transition: transform 0.3s ease;
             cursor: zoom-in;
             user-select: none;
-            flex-shrink: 0; /* Zapobiega zgniataniu zdjęcia */
+            display: block;
+            margin: auto;
+        }
+
+        /* REGUŁA DLA TELEFONU - PEŁNA WYSOKOŚĆ I PRZESUWANIE */
+        @media (max-width: 768px) {
+            #lightbox {
+                overflow-x: auto; /* Pozwala przesuwać na boki */
+                justify-content: flex-start; /* Startuje od lewej krawędzi przy szerokich fotkach */
+            }
+
+            #lightbox img {
+                height: 100vh !important; /* Zdjęcie na całą wysokość ekranu */
+                max-height: 100vh !important;
+                max-width: none !important; /* Pozwala zdjęciu wyjść poza szerokość ekranu */
+                width: auto !important;
+                margin: 0; /* Usuwamy marginesy dla płynnego przesuwania */
+            }
         }
 
         #lightbox img.zoomed {
-            max-width: none;
-            max-height: none;
             cursor: zoom-out;
-            transform: scale(2);
-            margin: auto; /* Pozwala na scrollowanie we wszystkich kierunkach */
+            transform: scale(1.5);
         }
         .close-btn {
             position: fixed;
@@ -923,16 +924,19 @@
 
 <script>
     // --- FUNKCJA OTWIERANIA LIGHTBOXA ---
-function openLightbox(element, fullSizeSrc) {
-    const lightbox = document.getElementById('lightbox');
-    const lbImg = document.getElementById('lightbox-img');
-    
-    lbImg.src = fullSizeSrc || element.src;
-    lbImg.classList.remove('zoomed'); 
-    
-    lightbox.style.display = 'flex'; // Upewniamy się, że jest flex przed fullscreenem
-    document.body.style.overflow = 'hidden';
+	function openLightbox(element, fullSizeSrc) {
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightbox-img');
+        
+        lbImg.src = fullSizeSrc || element.src;
+        lbImg.classList.remove('zoomed'); 
+        
+        lightbox.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
 
+        // Resetuje pozycję przewijania na telefonie do początku (lewej strony)
+        lightbox.scrollLeft = 0;
+    }
     // Próba wejścia w Fullscreen
     const requestMethod = lightbox.requestFullscreen || 
                           lightbox.webkitRequestFullscreen || 

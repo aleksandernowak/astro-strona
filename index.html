@@ -45,31 +45,29 @@
         nav ul { display: flex; list-style: none; }
         nav ul li { margin-left: 20px; }
         nav ul li a {
-			color: var(--text);
-			text-decoration: none;
-			font-size: 1em;
-			transition: 0.3s;
-			padding: 8px 16px;
-			border: 1px solid #333;
-			border-radius: 5px;
-			background: rgba(255, 255, 255, 0.05);
-			white-space: nowrap;
-			display: inline-block;
-		}
+            color: var(--text);
+            text-decoration: none;
+            font-size: 1em;
+            transition: 0.3s;
+            padding: 8px 16px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            white-space: nowrap;
+            display: inline-block;
+        }
 
-		nav ul li a:hover { 
-			color: var(--accent); 
-			border-color: var(--accent); /* Obwódka zmienia kolor przy najechaniu */
-			background: rgba(74, 144, 226, 0.1); 
-		}
+        nav ul li a:hover { 
+            color: var(--accent); 
+            border-color: var(--accent);
+            background: rgba(74, 144, 226, 0.1); 
+        }
 
         /* HERO SECTION */
-        .hero {
+        header {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                        url('img/miniaturki/tapeta/gromada_podwojna_mini.jpg') no-repeat center center/cover;
             height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                        url('img/tapeta/gromada_podwojna.png');
-            background-size: cover;
-            background-position: center;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -78,6 +76,7 @@
 
         .hero-content h1 { font-size: 4em; margin-bottom: 10px; letter-spacing: -1px; }
         .hero-content p { font-size: 1.2em; color: var(--muted); margin-bottom: 30px; }
+        
         .btn {
             padding: 12px 30px;
             background: var(--accent);
@@ -86,7 +85,7 @@
             border-radius: 5px;
             font-weight: bold;
             transition: 0.3s;
-			display: inline-block;
+            display: inline-block;
         }
         .btn:hover { background: #357abd; transform: translateY(-3px); }
 
@@ -114,10 +113,11 @@
         
         .item img { 
             width: 100%; 
-            height: 550px; 
+            aspect-ratio: 3 / 2; /* Miniaturki 900x600 */
             object-fit: cover; 
             object-position: center;
             transition: 0.5s ease;
+            cursor: zoom-in;
         }
         
         .item:hover img { transform: scale(1.02); }
@@ -130,6 +130,21 @@
         }
 
         .item-info h3 { font-size: 1.6em; margin-bottom: 10px; }
+		
+		/* Styl dla kontenera z dwoma zdjęciami (np. komety) */
+		.image-comparison {
+			display: flex;
+			gap: 5px;
+			padding: 5px;
+			background: var(--card-bg);
+		}
+
+		.image-comparison img {
+			width: 50% !important;
+			aspect-ratio: auto !important; /* Wyłącza 3/2 */
+			object-fit: contain !important; /* Pokazuje całe zdjęcie */
+			height: auto !important;
+		}
         
         .object-description { font-size: 0.95em; color: #ccc; margin: 15px 0 25px 0; flex-grow: 1; text-align: justify; }
         
@@ -163,111 +178,133 @@
             font-weight: bold;
         }
         .astrobin-link:hover { background: var(--accent); color: white; }
+		
+		.gallery-filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: var(--text);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+		
+        /* LIGHTBOX STYLES */
+        #lightbox {
+            display: none;
+            position: fixed;
+            z-index: 10001;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: auto;
+        }
 
-		/* LIGHTBOX STYLES */
-		#lightbox {
-			display: none;
-			position: fixed;
-			z-index: 10001;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background: rgba(0, 0, 0, 0.95);
-			align-items: center;
-			justify-content: center;
-			cursor: pointer; /* Kliknięcie w tło zamknie okno */
-			overflow: auto; /* Pozwala przewijać, gdy zdjęcie jest powiększone */
-		}
+        #lightbox img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border: none;
+            box-shadow: none;
+            transition: transform 0.2s ease-out;
+            cursor: zoom-in;
+            user-select: none;
+            transform-origin: center;
+        }
 
-		#lightbox img {
-			max-width: 90%;
-			max-height: 90vh;
-			border: 1px solid #333;
-			box-shadow: 0 0 40px rgba(0,0,0,0.8);
-			transition: transform 0.1s ease-out; /* Krótki czas reakcji dla płynności */
-			cursor: zoom-in;
-			user-select: none;
-			transform-origin: center; /* Punkt startowy */
-		}
+        #lightbox img.zoomed {
+            transform: scale(2.5);
+            cursor: zoom-out;
+        }
 
-		#lightbox img.zoomed {
-			transform: scale(2.5); /* Większe powiększenie, by było czym przesuwać */
-			cursor: zoom-out;
-}
-		.close-btn {
-			position: fixed;
-			top: 20px;
-			right: 30px;
-			color: white;
-			font-size: 45px;
-			font-weight: bold;
-			cursor: pointer;
-			z-index: 10002;
-			text-shadow: 0 0 10px rgba(0,0,0,0.5);
-		}
+        .close-btn {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 45px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10002;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
 
-        @media (max-width: 768px) {
-            .hero-content h1 { font-size: 2.5em; }
-            .grid { grid-template-columns: 1fr; }
-            .item img { height: 400px; }
-            .image-comparison img { width: 100% !important; display: block !important; margin-bottom: 5px; }
-            .image-comparison { flex-direction: column; }
-			
-				nav {
-			flex-direction: column;
-			padding: 15px 5%;
-		}
-
-		nav ul {
-			margin-top: 15px;
-			flex-wrap: wrap;
-			justify-content: center;
-			gap: 8px;
-		}
-
-		nav ul li {
-			margin: 0;
-		}
-
-		nav ul li a {
-			font-size: 0.95em; /* Nieco mniejsza czcionka, by wszystko się zmieściło */
-			padding: 10px 15px;
-			border: 1px solid var(--accent);
-			border-radius: 5px;
-			display: inline-block;
-			background: rgba(74, 144, 226, 0.05);
-			white-space: nowrap; /* KLUCZOWA POPRAWKA */
-			text-align: center;
-		}
-	}
-        
         /* O MNIE, HISTORIA, SPRZET STYLES */
         .about-container { display: flex; align-items: flex-start; gap: 50px; max-width: 1100px; margin: 0 auto; flex-wrap: wrap; }
         .about-image { flex: 1; min-width: 300px; }
-        .about-image img { width: 100%; border-radius: 15px; border: 1px solid #222; }
+        
+        /* PORTRET O MNIE - PROPORCJA 3:4 */
+        .about-image img { 
+            width: 100%; 
+            aspect-ratio: 3 / 4; 
+            object-fit: cover; 
+            border-radius: 15px; 
+            border: 1px solid #222; 
+        }
+
         .about-text { flex: 2; min-width: 300px; }
         .about-text h3 { color: var(--accent); margin: 25px 0 10px 0; }
         .about-text p { margin-bottom: 15px; color: #ccc; font-size: 1.05em; text-align: justify; }
+
         .history-container { max-width: 1000px; margin: 0 auto; }
         .history-item { margin-bottom: 80px; border-left: 2px solid var(--accent); padding-left: 40px; position: relative; }
         .history-dot { position: absolute; left: -9px; top: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
         .history-meta { color: var(--muted); font-size: 0.9em; margin-bottom: 15px; font-weight: bold; }
         .history-content { display: block; width: 100%; }
         .history-content p { color: #ccc; margin-bottom: 20px; text-align: justify; }
+        
         .history-images { display: flex !important; flex-wrap: wrap !important; gap: 10px; width: 100%; margin-top: 20px; }
-        .history-images img { width: calc(33.333% - 7px); aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; border: 1px solid #333; cursor: zoom-in; transition: 0.3s; }
+        
+        /* MINIATURKI HISTORII - PROPORCJA 1:1 */
+        .history-images img { 
+            width: calc(33.333% - 7px); 
+            aspect-ratio: 1 / 1; 
+            object-fit: cover; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            cursor: zoom-in; 
+            transition: 0.3s; 
+        }
+
         .eq-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
         .eq-card { background: var(--card-bg); padding: 25px; border-radius: 12px; width: 300px; border-top: 3px solid var(--accent); display: flex; flex-direction: column; }
         .eq-card h3 { margin-bottom: 15px; color: var(--accent); font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
         .eq-card ul { list-style: none; flex-grow: 1; }
         .eq-card li { margin-bottom: 8px; font-size: 0.9em; padding-left: 15px; position: relative; }
         .eq-card li::before { content: "•"; color: var(--accent); position: absolute; left: 0; }
+        
         .contact-links { display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; margin-top: 30px; }
         .contact-item { text-decoration: none; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 15px; transition: 0.4s; min-width: 140px; }
         .contact-item i { font-size: 3em; color: var(--accent); }
-</style>
 
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 2.5em; }
+            .grid { grid-template-columns: 1fr; }
+            .item img { height: auto; aspect-ratio: 3/2; }
+            nav { flex-direction: column; padding: 15px 5%; }
+            nav ul { margin-top: 15px; flex-wrap: wrap; justify-content: center; gap: 8px; }
+            nav ul li { margin: 0; }
+            nav ul li a { font-size: 0.95em; padding: 10px 15px; white-space: nowrap; }
+        }
+    </style>
 </head>
 <body style="margin: 0; padding: 0; background-color: #050507; color: #e0e0e0; font-family: 'Inter', sans-serif; line-height: 1.6; scroll-behavior: smooth;">
 
@@ -277,7 +314,7 @@
 	</div>
 
 <nav>
-    <div class="logo">Aleksander Nowak | Astrofotografia</div>
+    <div class="logo">Aleksander Nowak | <span>Astrofotografia</span></div>
         <ul>
             <li><a href="#galeria">Galeria</a></li>
             <li><a href="#o-mnie">O mnie</a></li>
@@ -296,47 +333,22 @@
         </div>
     </header>
 
-    <section id="galeria">
-        <h2>Galeria</h2>
-		<div class="gallery-filters" style="text-align: center; margin-bottom: 40px;">
-        <style>
-            .filter-btn {
-                background: transparent;
-                border: 1px solid #333;
-                color: var(--muted);
-                padding: 8px 20px;
-                margin: 5px;
-                cursor: pointer;
-                border-radius: 20px;
-                transition: 0.3s;
-                font-family: 'Inter', sans-serif;
-            }
-            .filter-btn:hover, .filter-btn.active {
-                border-color: var(--accent);
-                color: var(--accent);
-                background: rgba(74, 144, 226, 0.1);
-            }
-			@media (max-width: 768px) {
-            #galeria, 
-            #o-mnie, 
-            #historia, 
-            #sprzet, 
-            #kontakt {
-                padding-top: 140px !important;
-                scroll-margin-top: 140px;
-            }
-        }
-        </style>
-        <button class="filter-btn active" onclick="filterGallery('all', this)">Wszystkie</button>
-        <button class="filter-btn" onclick="filterGallery('uklad-sloneczny', this)">Układ Słoneczny</button>
-        <button class="filter-btn" onclick="filterGallery('glebokie-niebo', this)">Głębokie Niebo</button>
-        <button class="filter-btn" onclick="filterGallery('galaktyki', this)">Galaktyki</button>
-        <button class="filter-btn" onclick="filterGallery('krajobraz', this)">Fotografia Krajobrazowa</button>
-    </div>
+ <section id="galeria" class="section">
+    <div class="container">
+        <h2 class="section-title">Galeria</h2>
+        
+        <div class="gallery-filters">
+            <button class="filter-btn active" onclick="filterGallery('all', this)">Wszystkie</button>
+            <button class="filter-btn" onclick="filterGallery('uklad-sloneczny', this)">Układ Słoneczny</button>
+            <button class="filter-btn" onclick="filterGallery('glebokie-niebo', this)">Głębokie Niebo</button>
+            <button class="filter-btn" onclick="filterGallery('galaktyki', this)">Galaktyki</button>
+            <button class="filter-btn" onclick="filterGallery('krajobraz', this)">Fotografia Krajobrazowa</button>
+        </div>
+
         <div class="grid">
             
             <div class="item glebokie-niebo">
-                <img src="img/galeria/IC63.png" alt="IC 63" onclick="openLightbox(this)" style="cursor: zoom-in;">
+                <img src="img/miniaturki/galeria/IC63_mini.jpg" alt="IC 63" onclick="openLightbox(this, 'img/galeria/IC63.png')" loading="lazy">
                 <div class="item-info">
                     <h3>IC 63 (Mgławica Duch)</h3>
                     <p class="object-description">
@@ -347,7 +359,7 @@
                         <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
                         <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, ZWO ASI2600MC Pro, NEQ6-Pro
                         <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 80 x 600sek L-Ultimate + 60 x 60sek L-Pro (Łącznie ~14h)
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Pro 2", Optolong L-Ultimate 2"
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Pro 2", Optolong L-Ultimate 2"
                         <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, APP, Photoshop
                     </div>
                     <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=1czfof" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
@@ -355,7 +367,7 @@
             </div>
 
             <div class="item glebokie-niebo">
-                <img src="img/galeria/NGC 2264.png" alt="NGC 2264" onclick="openLightbox(this)" style="cursor: zoom-in;">
+                <img src="img/miniaturki/galeria/NGC_2264_mini.jpg" alt="NGC 2264" onclick="openLightbox(this, 'img/galeria/NGC 2264.png')" loading="lazy">
                 <div class="item-info">
                     <h3>NGC 2264 (Gromada Choinka)</h3>
                     <p class="object-description">
@@ -366,7 +378,7 @@
                         <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)/ Lublin (Bortle 5) / Stoczek Łukowski (Bortle 4)
                         <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Askar SQA 85, Askar 120 APO, ZWO AM5, ASI 2600mc Pro
                         <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 240 x 600sek L-Ultimate + 90 x 240sek UV/IR (Łącznie 20h)
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Ultimate 2", Optolong UV/IR cut 2"
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Ultimate 2", Optolong UV/IR cut 2"
                         <i class="fas fa-laptop-code"></i><strong>Soft:</strong> APP, N.I.N.A., PixInsight, Adobe Photoshop
                     </div>
                     <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=he08ql#gallery" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
@@ -374,7 +386,7 @@
             </div>
 
             <div class="item glebokie-niebo">
-                <img src="img/galeria/IC1848-dusza.png" alt="IC 1848" onclick="openLightbox(this)" style="cursor: zoom-in;">
+                <img src="img/miniaturki/galeria/IC1848-dusza_mini.jpg" alt="IC 1848" onclick="openLightbox(this, 'img/galeria/IC1848-dusza.png')" loading="lazy">
                 <div class="item-info">
                     <h3>IC 1848 (Mgławica Dusza)</h3>
                     <p class="object-description">
@@ -385,37 +397,37 @@
                         <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
                         <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Askar SQA 85, Sky-Watcher NEQ6 Pro, ZWO ASI2600MC Pro
                         <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 120 x 600sek  (łącznie 20h)
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Ultimate 2"
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Ultimate 2"
                         <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, Adobe Photoshop
                     </div>
                     <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=y1d7j2#gallery" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
                 </div>
             </div>
-            
+
             <div class="item uklad-sloneczny">
                 <div class="image-comparison">
-                    <img src="img/galeria/C_2025_A6_Lemmon_1.png" alt="C/2025 A6 (Lemmon) - Dzień 1" onclick="openLightbox(this)" style="cursor: zoom-in; width: 49%; display: inline-block;">
-                    <img src="img/galeria/C_2025_A6_Lemmon_2.png" alt="C/2025 A6 (Lemmon) - Dzień 2" onclick="openLightbox(this)" style="cursor: zoom-in; width: 49%; display: inline-block;">
+                    <img src="img/miniaturki/galeria/C_2025_A6_Lemmon_1_mini.jpg" alt="C/2025 A6 (Lemmon) - Dzień 1" onclick="openLightbox(this, 'img/galeria/C_2025_A6_Lemmon_1.png')" style="width: 49%; display: inline-block;">
+                    <img src="img/miniaturki/galeria/C_2025_A6_Lemmon_2_mini.jpg" alt="C/2025 A6 (Lemmon) - Dzień 2" onclick="openLightbox(this, 'img/galeria/C_2025_A6_Lemmon_2.png')" style="width: 49%; display: inline-block;">
                 </div>
                 <div class="item-info">
                     <h3>C/2025 A6 (Lemmon) — Porównanie warkocza</h3>
                     <p class="object-description">
-                        Choć wielu pasjonatów podziwiało już kometę C/2025 A6 (Lemmon), mało kto zdaje sobie sprawę z dynamiki jej warkocza. Strumień gazu i pyłu zmienia się tak gwałtownie, że jego „taniec” widać niemal z godziny na godzinę. Poniższe zestawienie pokazuje tę metamorfozę w ciągu dwóch kolejnych dni: pierwsza fotografia pochodzi z 19 października (godz. 19:20), a druga z 20 października (godz. 20:10). Wystarczyła zaledwie doba, by kształt warkocza zmienił się w sposób uderzający.
+                        Choć wielu pasjonatów podziwiało już kometę C/2025 A6 (Lemmon), mało kto zdaje sobie sprawę z dynamiki jej warkocza. Strumień gazu i pyłu zmienia się tak gwałtownie, że jego „taniec” widać niemal z godziny na godzinę. Poniższe zestawienie pokazuje tę metamorfozę w ciągu dwóch kolejnych dni.
                     </p>
                     <div class="tech-details">
                         <i class="fas fa-calendar-day"></i><strong>Data:</strong> 19 - 20 Października 2025
                         <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Piasek (25km od Tarnowskich Gór, Bortle 4)
                         <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Askar SQA85, Sky-Watcher NEQ6-Pro, ZWO ASI2600MC Pro
                         <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 30 × 60sek (łącznie 30′)
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong UV/IR cut 2"
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong UV/IR cut 2"
                         <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, Adobe Photoshop
                     </div>
                     <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=65izxg#gallery" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
                 </div>
             </div>
-            
+
             <div class="item glebokie-niebo">
-                <img src="img/galeria/IC1805_serce.png" alt="IC 1805" onclick="openLightbox(this)" style="cursor: zoom-in;">
+                <img src="img/miniaturki/galeria/IC1805_serce_mini.jpg" alt="IC 1805" onclick="openLightbox(this, 'img/galeria/IC1805_serce.png')" loading="lazy">
                 <div class="item-info">
                     <h3>IC1805 (Mgławica Serce)</h3>
                     <p class="object-description">
@@ -426,7 +438,7 @@
                         <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
                         <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Askar SQA 85, Askar 120 APO, ZWO AM5, ASI 2600mc Pro
                         <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 100 x 600sek (Łącznie ~17h)
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Ultimate 2"
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Ultimate 2"
                         <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, Adobe Photoshop
                     </div>
                     <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=sih0as#gallery" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
@@ -434,7 +446,7 @@
             </div>
 
             <div class="item glebokie-niebo">
-                <img src="img/galeria/NGC7635_M52_NGC7538_Sh-2157_Sh2-161.png" alt="Kompleks Bąbel" onclick="openLightbox(this)" style="cursor: zoom-in;">
+                <img src="img/miniaturki/galeria/NGC7635_M52_NGC7538_Sh-2157_Sh2-161_mini.jpg" alt="Kompleks Bąbel" onclick="openLightbox(this, 'img/galeria/NGC7635_M52_NGC7538_Sh-2157_Sh2-161.png')" loading="lazy">
                 <div class="item-info">
                     <h3>Mgławica Bańka i okolice</h3>
                     <p class="object-description">
@@ -445,205 +457,57 @@
                         <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
                         <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Askar SQA 85, Sky-Watcher NEQ6 Pro, ASI2600MC Pro
                         <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 60 x 600sek L-Ultimate + 60 x 60sek L-Pro (Łącznie 11h)
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Pro 2", Optolong L-Ultimate 2"
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Pro 2", Optolong L-Ultimate 2"
                         <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, Adobe Photoshop
                     </div>
                     <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=kwmc97#gallery" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
                 </div>
             </div>
-			
-			<div class="item glebokie-niebo">
-                <img src="img/galeria/IRIS_NEBULA_NGC7023.png" alt="Iris Nebula NGC 7023" onclick="openLightbox(this)" style="cursor: zoom-in;">
+
+            <div class="item glebokie-niebo">
+                <img src="img/miniaturki/galeria/IRIS_NEBULA_NGC7023_mini.jpg" alt="Iris Nebula NGC 7023" onclick="openLightbox(this, 'img/galeria/IRIS_NEBULA_NGC7023.png')" loading="lazy">
                 <div class="item-info">
                     <h3>NGC 7023 (Mgławica Irys)</h3>
                     <p class="object-description">
-                        Mgławica Irys to efektowna mgławica refleksyjna w gwiazdozbiorze Cefeusza. Charakterystyczny niebieski kolor zawdzięcza rozproszeniu światła gwiazdy centralnej na kosmicznym pyle. To jeden z najwdzięczniejszych obiektów do fotografowania pod ciemniejszym niebem.
+                        Mgławica Irys to efektowna mgławica refleksyjna w gwiazdozbiorze Cefeusza. Charakterystyczny niebieski kolor zawdzięcza rozproszeniu światła gwiazdy centralnej na kosmicznym pyle.
                     </p>
                     <div class="tech-details">
                         <i class="fas fa-calendar-day"></i><strong>Data:</strong> Wrzesień 2025 (6 dni sesji)
                         <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
                         <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, NEQ6-Pro, ZWO ASI2600MC Pro
                         <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 200 x 240sek  (łącznie 13h 20')
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Pro 2"
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Pro 2"
                         <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, APP, Photoshop
                     </div>
                     <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=t9n2zh" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
                 </div>
             </div>
 
-            <div class="item glebokie-niebo">
-                <img src="img/galeria/Fish_Head_Nebula.png" alt="Fish Head Nebula" onclick="openLightbox(this)" style="cursor: zoom-in;">
-                <div class="item-info">
-                    <h3>Mgławica Rybia Głowa (IC 1795)</h3>
-                    <p class="object-description">
-                        Część większego kompleksu w sercu Kasjopei. Zdjęcie wykonane w technice wąskopasmowej (Multiband), co pozwoliło wydobyć dynamiczne struktury gazu i pyłu, przypominające swoim kształtem profil ryby.
-                    </p>
-                    <div class="tech-details">
-                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> Wrzesień 2025 (4 dni sesji)
-                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
-                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, NEQ6-Pro, ZWO ASI2600MC Pro
-                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 72 x 600sek (Łącznie 12h)
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Ultimate 2"
-                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, APP, Photoshop
-                    </div>
-                    <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=zhw9du" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
-                </div>
-            </div>
-
-            <div class="item glebokie-niebo">
-                <img src="img/galeria/Pacman_Nebula.png" alt="Pacman Nebula NGC 281" onclick="openLightbox(this)" style="cursor: zoom-in;">
-                <div class="item-info">
-                    <h3>NGC 281 (Mgławica Pacman)</h3>
-                    <p class="object-description">
-                        Mgławica emisyjna w Kasjopei, znana ze swojego charakterystycznego kształtu przypominającego bohatera gry retro. Bogata w globule Boka – ciemne obłoki pyłu, w których rodzą się nowe gwiazdy.
-                    </p>
-                    <div class="tech-details">
-                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> 17 - 19 września 2025
-                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
-                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, NEQ6-Pro, ZWO ASI2600MC Pro
-                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 1h L-Pro + 11h 40' L-Ultimate  (Łącznie 12h 40')
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Pro 2", Optolong L-Ultimate 2"
-                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, Photoshop
-                    </div>
-                    <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=twtb8l" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
-                </div>
-            </div>
-			
-			<div class="item galaktyki">
-                <img src="img/galeria/M106_NGC4217_NGC4248.png" alt="M106, NGC 4217, NGC 4248" onclick="openLightbox(this)" style="cursor: zoom-in;">
-                <div class="item-info">
-                    <h3>M106 (Galaktyka spiralna)</h3>
-                    <p class="object-description">
-                        M106 to jasna galaktyka spiralna położona w gwiazdozbiorze Psów Gończych. Wyróżnia się nie tylko swoją strukturą, ale i aktywnym jądrem typu Seyferta. Na szerokim kadrze towarzyszą jej m.in. NGC 4217 (widoczna z boku galaktyka spiralna) oraz NGC 4248. Rejestracja tego obszaru pozwoliła na ukazanie bogactwa odległych galaktyk tła oraz subtelnych pasm pyłowych w ramionach głównego obiektu.
-                    </p>
-                    <div class="tech-details">
-                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> 30 stycznia 2025
-                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
-                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, ZWO ASI2600MC Pro, NEQ6-Pro
-                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 150 x 120sek (Łącznie 5h)
-                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-PRO 2"
-                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, APP, Photoshop
-                    </div>
-                    <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=hck6qm#gallery" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
-                </div>
-            </div>
-			
-			<div class="item krajobraz">
-                <img src="img/galeria/Obloki_srebrzyste_2025.jpg" alt="Obłoki Srebrzyste" onclick="openLightbox(this)" style="cursor: zoom-in;">
-                <div class="item-info">
-                    <h3>Obłoki Srebrzyste (NLC)</h3>
-                    <p class="object-description">
-                        Obłoki srebrzyste (Noctilucent Clouds) to niezwykłe zjawisko mezosferyczne, powstające na wysokości około 80 km. Te najwyższe chmury na Ziemi są widoczne jedynie w okresie letnim, gdy słońce znajduje się kilka-kilkanaście stopni pod horyzontem, podświetlając kryształki lodu zawieszone w górnych warstwach atmosfery. Powyższa klatka ukazuje ich charakterystyczną, błękitno-srebrzystą strukturę nad lokalnym horyzontem.
-                    </p>
-                    <div class="tech-details">
-                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> 2 lipca 2025
-                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry
-                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Canon 6D, Samyang 24mm UMC f/1.4
-                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 1 x 5sek ISO 800 f/2,8
-                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> Adobe Photoshop
-                    </div>
-                </div>
-            </div>
-			
-			<div class="item krajobraz">
-                <img src="img/galeria/Obloki_srebrzyste_2024.jpg" alt="Obłoki Srebrzyste" onclick="openLightbox(this)" style="cursor: zoom-in;">
-                <div class="item-info">
-                    <h3>Obłoki Srebrzyste (NLC)</h3>
-                    <p class="object-description">
-                        Kadr zarejestrowany 9 lipca 2024 roku ukazuje mezosferyczne pasma lodu na wysokości ok. 80 km. Te „nocne świecące chmury” powstają, gdy para wodna osadza się na drobinach pyłu – zarówno naturalnego pochodzenia kosmicznego (dym meteorowy), jak i antropogenicznego, czyli pozostałościach po startach rakiet i spalających się satelitach (NASA AIM mission / Michael Stevens et al.). Zjawisko to, widoczne jedynie latem, jest unikalnym wskaźnikiem zmian zachodzących na samym skraju naszej atmosfery (Journal of Earth and Space Science).
-                    </p>
-                    <div class="tech-details">
-                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> 9 lipca 2024
-                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry
-                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Canon 600D, Canon Ultrasonic 50mm f/1.4
-                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 1 x 5sek ISO 800 f/2,8
-                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> Adobe Photoshop
-                    </div>
-                </div>
-            </div>
-			
-			<div class="item galaktyki">
-                <img src="img/galeria/M31.png" alt="M31 Galaktyka Andromedy" onclick="openLightbox(this)" style="cursor: zoom-in;">
+            <div class="item galaktyki">
+                <img src="img/miniaturki/galeria/M31_mini.jpg" alt="M31 Galaktyka Andromedy" onclick="openLightbox(this, 'img/galeria/M31.png')" loading="lazy">
                 <div class="item-info">
                     <h3>M31 (Galaktyka Andromedy)</h3>
                     <p class="object-description">
-                        Galaktyka Andromedy to nasza najbliższa wielka sąsiadka, dominująca na jesiennym niebie. Powyższa fotografia, będąca wynikiem ponad 24-godzinnej integracji materiału, ukazuje niezwykłą złożoność jej struktury pyłowej oraz ramion spiralnych. Dzięki wysokiej rozdzielczości, w jej otoczeniu można dostrzec liczne galaktyki satelitarne oraz dziesiątki gromad kulistych, które stanowią fascynujące wyzwanie obserwacyjne i fotograficzne.
+                        Galaktyka Andromedy to nasza najbliższa wielka sąsiadka, dominująca na jesiennym niebie. Powyższa fotografia, będąca wynikiem ponad 24-godzinnej integracji materiału, ukazuje niezwykłą złożoność jej struktury.
                     </p>
                     <div class="tech-details">
                         <i class="fas fa-calendar-day"></i><strong>Data:</strong> 6 września 2024, 24 października 2024
                         <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
                         <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Sky-Watcher Evostar 72ED, ZWO ASI2600MC Pro, Sky-Watcher NEQ6-Pro
-                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 250 x 240sek Optolong L-PRO 2" + 90 x 300sek Optolong L-Ultimate 2" (Łącznie 24h 10min)
+                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 250 x 240sek L-PRO + 90 x 300sek L-Ultimate (Łącznie 24h 10min)
                         <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-PRO 2", Optolong L-Ultimate 2"
                         <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, Adobe Photoshop
                     </div>
                     <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=ifz1tc&r=B#gallery" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
                 </div>
             </div>
-			
-			<div class="item uklad-sloneczny">
-				<img src="img/galeria/Zacmienie_Ksiezyca_2025.jpg" alt="Zaćmienie Księżyca 7.09.2025" onclick="openLightbox(this)" style="cursor: zoom-in;">
-				<div class="item-info">
-					<h3>Zaćmienie Księżyca (7.09.2025)</h3>
-					<p class="object-description">
-						Spektakularne całkowite zaćmienie Księżyca, widoczne w całej Polsce. Zjawisko to, zwane "Krwawym Księżycem", było wyjątkowe ze względu na pokrycie się z tzw. superksiężycem. Faza całkowita rozpoczęła się o 19:31, osiągając maksimum o 20:13.
-					</p>
-					<div class="tech-details">
-						<i class="fas fa-calendar-day"></i> <strong>Data:</strong> 7 września 2025
-						<i class="fas fa-map-marker-alt"></i> <strong>Lokalizacja:</strong> Piasek (25km od Tarnowskich Gór, Bortle 4)
-						<i class="fas fa-microchip"></i> <strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, NEQ6-Pro, ZWO ASI2600MC Pro
-						<i class="fas fa-cog"></i> <strong>Akcesoria:</strong> Baader 2" MPCC Mark III Newton Coma Corrector
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Brak
-						<i class="fas fa-laptop-code"></i> <strong>Soft:</strong> N.I.N.A., SharpCap 4.0, Photoshop
-					</div>
-					<a href="https://app.astrobin.com/u/Aleksander_Nowak?i=ppblvy" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
-				</div>
-			</div>
-			
-			<div class="item uklad-sloneczny">
-                <img src="img/galeria/Zacmienie_2022.10.25_godzina_12_15.jpg" alt="Częściowe zaćmienie Słońca" onclick="openLightbox(this)" style="cursor: zoom-in;">
-                <div class="item-info">
-                    <h3>Częściowe zaćmienie Słońca</h3>
-                    <p class="object-description">
-                        Fotografia w tzw. białym świetle ukazująca trzy fascynujące zjawiska: zarys gór i kraterów na krawędzi tarczy Księżyca, plamy słoneczne o niższej temperaturze niż otoczenie oraz granulację fotosfery — kipiącą plazmę przypominającą strukturą skórkę pomarańczy.
-                    </p>
-                    <div class="tech-details">
-                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> 25 października 2022
-                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry
-                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Newton Sky-Watcher 200PDS, Canon 1100D (Full Mod), Sky-Watcher EQ5
-                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 1/1000 sek, ISO 100
-                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Folia Baadera ND5
-                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> Adobe Photoshop
-                    </div>
-                </div>
-            </div>
 
-			<div class="item glebokie-niebo">
-				<img src="img/galeria/M57.png" alt="M57 Mgławica Pierścień" onclick="openLightbox(this)" style="cursor: zoom-in;">
-				<div class="item-info">
-					<h3>M57 (Mgławica Pierścień)</h3>
-					<p class="object-description">
-						Jedna z najsłynniejszych mgławic planetarnych, położona w gwiazdozbiorze Lutni. Na zdjęciu widoczna charakterystyczna struktura torusa oraz, przy tej skali i czasie naświetlania, sąsiednia galaktyka IC 1296.
-					</p>
-					<div class="tech-details">
-						<i class="fas fa-calendar-day"></i> <strong>Data:</strong> 20 sierpnia 2025
-						<i class="fas fa-map-marker-alt"></i> <strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
-						<i class="fas fa-microchip"></i> <strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, NEQ6-Pro, ZWO ASI585MC
-						<i class="fas fa-clock"></i> <strong>Ekspozycja:</strong> 300x60" (Łącznie 5h)
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong UV/IR cut 2"
-						<i class="fas fa-cog"></i> <strong>Akcesoria:</strong> Tele Vue 2.5x 1.25" Powermate (PMT-2513)
-						<i class="fas fa-laptop-code"></i> <strong>Soft:</strong> N.I.N.A., Astro Pixel Processor, PixInsight, Photoshop
-					</div>
-					<a href="https://app.astrobin.com/u/Aleksander_Nowak?i=ru0o6u" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
-				</div>
-			</div>
-			
-			<div class="item uklad-sloneczny">
-                <img src="img/galeria/Ksiezyc_1.png" alt="Księżyc" onclick="openLightbox(this)" style="cursor: zoom-in;">
+            <div class="item uklad-sloneczny">
+                <img src="img/miniaturki/galeria/Ksiezyc_1_mini.jpg" alt="Księżyc" onclick="openLightbox(this, 'img/galeria/Ksiezyc_1.png')" loading="lazy">
                 <div class="item-info">
                     <h3>Księżyc (Mozaika)</h3>
                     <p class="object-description">
-                        Szczegółowa mozaika tarczy Księżyca wykonana w bliskiej podczerwieni. Fotografia składa się z 15 paneli, gdzie każdy panel stanowi 50% stacku z jednominutowych filmów w formacie SER. Wykorzystanie pasma podczerwieni pozwoliło na znaczące ograniczenie wpływu seeingu, co przełożyło się na wysoką ostrość kraterów i struktur geologicznych na powierzchni Srebrnego Globu.
+                        Szczegółowa mozaika tarczy Księżyca wykonana w bliskiej podczerwieni. Fotografia składa się z 15 paneli. Wykorzystanie pasma podczerwieni pozwoliło na znaczące ograniczenie wpływu seeingu.
                     </p>
                     <div class="tech-details">
                         <i class="fas fa-calendar-day"></i><strong>Data:</strong> 10 czerwca 2022
@@ -657,48 +521,190 @@
                 </div>
             </div>
 
-			<div class="item glebokie-niebo">
-                <img src="img/galeria/Mglawica_Kocie_Oko_NGC 6543.png" alt="Mgławica Kocie Oko NGC 6543" onclick="openLightbox(this)" style="cursor: zoom-in;">
+            <div class="item glebokie-niebo">
+                <img src="img/miniaturki/galeria/Mglawica_Kocie_Oko_NGC_6543_mini.jpg" alt="Mgławica Kocie Oko NGC 6543" onclick="openLightbox(this, 'img/galeria/Mglawica_Kocie_Oko_NGC 6543.png')" loading="lazy">
                 <div class="item-info">
                     <h3>NGC 6543 (Mgławica Kocie Oko)</h3>
                     <p class="object-description">
-                        Jedna z najbardziej rozpoznawalnych mgławic planetarnych, znajdująca się w gwiazdozbiorze Smoka. Jej złożona struktura jest efektem wielu sesji z wykorzystaniem różnych czasów ekspozycji i kamer, co pozwoliło wydobyć subtelne detale tego obiektu.
+                        Jedna z najbardziej rozpoznawalnych mgławic planetarnych. Jej złożona struktura jest efektem wielu sesji z wykorzystaniem różnych czasów ekspozycji i kamer.
                     </p>
                     <div class="tech-details">
                         <i class="fas fa-calendar-day"></i><strong>Data:</strong> 27 kwietnia - 6 czerwca 2025
                         <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
-                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, NEQ6-Pro, ZWO ASI2600MC Pro, ZWO ASI585MC Pro
-                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 200x3" Optolong UV/IR 2" + 90x240" Optolong L-PRO 2" + 65x600" Optolong L-Ultimate 2" (Łącznie 17h)
-						<i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong UV/IR 2", Optolong L-PRO 2", Optolong L-Ultimate 2"
-						<i class="fas fa-cog"></i> <strong>Akcesoria:</strong> Tele Vue 2.5x 1.25" Powermate (PMT-2513)
-                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., Astro Pixel Processor (APP), AutoStakkert!, Photoshop
+                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, NEQ6-Pro, ASI2600MC Pro, ASI585MC Pro
+                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 17h (L-PRO, L-Ultimate, UV/IR)
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong UV/IR 2", Optolong L-PRO 2", Optolong L-Ultimate 2"
+                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., APP, AutoStakkert!, Photoshop
                     </div>
                     <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=vouyds" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
                 </div>
             </div>
+			<div class="item galaktyki">
+                <img src="img/miniaturki/galeria/M106_NGC4217_NGC4248_mini.jpg" alt="M106, NGC 4217, NGC 4248" onclick="openLightbox(this, 'img/galeria/M106_NGC4217_NGC4248.png')" loading="lazy">
+                <div class="item-info">
+                    <h3>M106 (Galaktyka spiralna)</h3>
+                    <p class="object-description">
+                        M106 to jasna galaktyka spiralna położona w gwiazdozbiorze Psów Gończych. Wyróżnia się nie tylko swoją strukturą, ale i aktywnym jądrem typu Seyferta. Na szerokim kadrze towarzyszą jej m.in. NGC 4217 oraz NGC 4248. Rejestracja tego obszaru pozwoliła na ukazanie bogactwa odległych galaktyk tła.
+                    </p>
+                    <div class="tech-details">
+                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> 30 stycznia 2025
+                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
+                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, ZWO ASI2600MC Pro, NEQ6-Pro
+                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 150 x 120sek (Łącznie 5h)
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-PRO 2"
+                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, APP, Photoshop
+                    </div>
+                    <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=hck6qm#gallery" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
+                </div>
+            </div>
+
+            <div class="item glebokie-niebo">
+                <img src="img/miniaturki/galeria/Fish_Head_Nebula_mini.jpg" alt="Fish Head Nebula" onclick="openLightbox(this, 'img/galeria/Fish_Head_Nebula.png')" loading="lazy">
+                <div class="item-info">
+                    <h3>Mgławica Rybia Głowa (IC 1795)</h3>
+                    <p class="object-description">
+                        Część większego kompleksu w sercu Kasjopei. Zdjęcie wykonane w technice wąskopasmowej (Multiband), co pozwoliło wydobyć dynamiczne struktury gazu i pyłu, przypominające swoim kształtem profil ryby.
+                    </p>
+                    <div class="tech-details">
+                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> Wrzesień 2025 (4 dni sesji)
+                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
+                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, NEQ6-Pro, ZWO ASI2600MC Pro
+                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 72 x 600sek (Łącznie 12h)
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Ultimate 2"
+                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, APP, Photoshop
+                    </div>
+                    <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=zhw9du" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
+                </div>
+            </div>
+
+            <div class="item glebokie-niebo">
+                <img src="img/miniaturki/galeria/Pacman_Nebula_mini.jpg" alt="Pacman Nebula NGC 281" onclick="openLightbox(this, 'img/galeria/Pacman_Nebula.png')" loading="lazy">
+                <div class="item-info">
+                    <h3>NGC 281 (Mgławica Pacman)</h3>
+                    <p class="object-description">
+                        Mgławica emisyjna w Kasjopei, znana ze swojego charakterystycznego kształtu przypominającego bohatera gry retro. Bogata w globule Boka – ciemne obłoki pyłu, w których rodzą się nowe gwiazdy.
+                    </p>
+                    <div class="tech-details">
+                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> 17 - 19 września 2025
+                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
+                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, NEQ6-Pro, ZWO ASI2600MC Pro
+                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 1h L-Pro + 11h 40' L-Ultimate (Łącznie 12h 40')
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong L-Pro 2", Optolong L-Ultimate 2"
+                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> N.I.N.A., PixInsight, Photoshop
+                    </div>
+                    <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=twtb8l" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
+                </div>
+            </div>
+
+            <div class="item krajobraz">
+                <img src="img/miniaturki/galeria/Obloki_srebrzyste_2024_mini.jpg" alt="Obłoki Srebrzyste" onclick="openLightbox(this, 'img/galeria/Obloki_srebrzyste_2024.jpg')" loading="lazy">
+                <div class="item-info">
+                    <h3>Obłoki Srebrzyste (NLC)</h3>
+                    <p class="object-description">
+                        Kadr zarejestrowany 9 lipca 2024 roku ukazuje mezosferyczne pasma lodu na wysokości ok. 80 km. Te „nocne świecące chmury” powstają, gdy para wodna osadza się na drobinach pyłu. Zjawisko to jest unikalnym wskaźnikiem zmian zachodzących na samym skraju naszej atmosfery.
+                    </p>
+                    <div class="tech-details">
+                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> 9 lipca 2024
+                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry
+                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Canon 600D, Canon 50mm f/1.4
+                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 1 x 5sek ISO 800 f/2,8
+                        <i class="fas fa-laptop-code"></i><strong>Soft:</strong> Adobe Photoshop
+                    </div>
+                </div>
+            </div>
+
+            <div class="item uklad-sloneczny">
+                <img src="img/miniaturki/galeria/Zacmienie_Ksiezyca_2025_mini.jpg" alt="Zaćmienie Księżyca 7.09.2025" onclick="openLightbox(this, 'img/galeria/Zacmienie_Ksiezyca_2025.jpg')" loading="lazy">
+                <div class="item-info">
+                    <h3>Zaćmienie Księżyca (7.09.2025)</h3>
+                    <p class="object-description">
+                        Spektakularne całkowite zaćmienie Księżyca, widoczne w całej Polsce. Zjawisko to, zwane "Krwawym Księżycem", było wyjątkowe ze względu na pokrycie się z tzw. superksiężycem.
+                    </p>
+                    <div class="tech-details">
+                        <i class="fas fa-calendar-day"></i> <strong>Data:</strong> 7 września 2025
+                        <i class="fas fa-map-marker-alt"></i> <strong>Lokalizacja:</strong> Piasek (25km od Tarnowskich Gór)
+                        <i class="fas fa-microchip"></i> <strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, NEQ6-Pro, ZWO ASI2600MC Pro
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Brak
+                    </div>
+                    <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=ppblvy" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
+                </div>
+            </div>
+
+            <div class="item uklad-sloneczny">
+                <img src="img/miniaturki/galeria/Zacmienie_2022.10.25_godzina_12_15_mini.jpg" alt="Częściowe zaćmienie Słońca" onclick="openLightbox(this, 'img/galeria/Zacmienie_2022.10.25_godzina_12_15.jpg')" loading="lazy">
+                <div class="item-info">
+                    <h3>Częściowe zaćmienie Słońca</h3>
+                    <p class="object-description">
+                        Fotografia w tzw. białym świetle ukazująca trzy fascynujące zjawiska: zarys gór i kraterów na krawędzi tarczy Księżyca, plamy słoneczne oraz granulację fotosfery.
+                    </p>
+                    <div class="tech-details">
+                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> 25 października 2022
+                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry
+                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Newton Sky-Watcher 200PDS, Canon 1100D, EQ5
+                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 1/1000 sek, ISO 100
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Folia Baadera ND5
+                    </div>
+                </div>
+            </div> 
+
+            <div class="item glebokie-niebo">
+                <img src="img/miniaturki/galeria/M57_mini.jpg" alt="M57 Mgławica Pierścień" onclick="openLightbox(this, 'img/galeria/M57.png')" loading="lazy">
+                <div class="item-info">
+                    <h3>M57 (Mgławica Pierścień)</h3>
+                    <p class="object-description">
+                        Jedna z najsłynniejszych mgławic planetarnych, położona w gwiazdozbiorze Lutni. Na zdjęciu widoczna charakterystyczna struktura torusa oraz sąsiednia galaktyka IC 1296.
+                    </p>
+                    <div class="tech-details">
+                        <i class="fas fa-calendar-day"></i> <strong>Data:</strong> 20 sierpnia 2025
+                        <i class="fas fa-map-marker-alt"></i> <strong>Lokalizacja:</strong> Tarnowskie Góry (Bortle 5)
+                        <i class="fas fa-microchip"></i> <strong>Sprzęt:</strong> Sky-Watcher Explorer 200PDS, NEQ6-Pro, ZWO ASI585MC
+                        <i class="fas fa-clock"></i> <strong>Ekspozycja:</strong> 300x60" (Łącznie 5h)
+                        <i class="fas fa-filter"></i> <strong>Filtr:</strong> Optolong UV/IR cut 2"
+                    </div>
+                    <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=ru0o6u" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
+                </div>
+            </div>
+
+            <div class="item krajobraz">
+                <img src="img/miniaturki/galeria/Obloki_srebrzyste_2025_mini.jpg" alt="Obłoki Srebrzyste" onclick="openLightbox(this, 'img/galeria/Obloki_srebrzyste_2025.jpg')" loading="lazy">
+                <div class="item-info">
+                    <h3>Obłoki Srebrzyste (NLC)</h3>
+                    <p class="object-description">
+                        Obłoki srebrzyste (Noctilucent Clouds) to niezwykłe zjawisko mezosferyczne, powstające na wysokości około 80 km. Powyższa klatka ukazuje ich charakterystyczną, błękitno-srebrzystą strukturę nad lokalnym horyzontem.
+                    </p>
+                    <div class="tech-details">
+                        <i class="fas fa-calendar-day"></i><strong>Data:</strong> 2 lipca 2025
+                        <i class="fas fa-map-marker-alt"></i><strong>Lokalizacja:</strong> Tarnowskie Góry
+                        <i class="fas fa-microchip"></i><strong>Sprzęt:</strong> Canon 6D, Samyang 24mm f/1.4
+                        <i class="fas fa-clock"></i><strong>Ekspozycja:</strong> 1 x 5sek ISO 800 f/2,8
+                    </div>
+                </div>
+            </div>
 
         </div>
-    </section>
-    
-    <section id="o-mnie" style="background-color: #08080a;">
-        <h2>O mojej pasji</h2>
-        <div class="about-container">
-            <div class="about-image">
-                <img src="img/o-mnie/profilowe.jpg" alt="profilowe 1" onclick="openLightbox(this)">
-            </div>
-            <div class="about-text">
-                <p>Moja przygoda z kosmosem zaczęła się od marzeń i miesięcznika „Młody Technik”. Jako uczeń szkoły im. Mikołaja Kopernika czułem niemal obowiązek, by osobiście sprawdzić, czy wszechświat naprawdę wygląda tak, jak opisują go astronomowie. W czasach, gdy o części było niezwykle trudno, zbudowałem swój pierwszy teleskop z soczewki od optyka i twardego, tekturowego tubusa. Nigdy nie zapomnę tej chwili, gdy przez własnoręcznie wykonany instrument pierwszy raz ujrzałem na żywo pierścienie Saturna.</p>
-                
-                <p><strong>Dziś wykorzystuję nowoczesne technologie, by z precyzją wycisnąć z matrycy każdy foton światła, który dotarł do nas z głębi kosmosu.</strong></p>
+    </div>
+</section>
 
-                <h3>Tarnowskie Góry i wyzwanie czasu</h3>
-                <p>Większość moich prac powstaje w rejonie <strong>Tarnowskich Gór (północna krawędź aglomeracji śląskiej)</strong>. Fotografowanie z miasta to ciągła walka z zanieczyszczeniem światłem, która uczy cierpliwości i wymaga stosowania specjalistycznych technik filtracji. Jednak astrofotografia to przede wszystkim podróż w czasie – rejestrując obiekty oddalone o miliony lat świetlnych, dotykam przeszłości, która dociera do nas z prędkością 300 tysięcy kilometrów na sekundę.</p>
+<section id="o-mnie" class="section">
+        <div class="container"> 
+            <h2 class="section-title">O mojej pasji</h2>
+            <div class="about-container">
+                <div class="about-image">
+                    <img src="img/miniaturki/o-mnie/profilowe_mini.jpg" alt="Aleksander Nowak - profilowe" onclick="openLightbox(this, 'img/o-mnie/profilowe.jpg')" style="cursor: zoom-in;">
+                </div>
+                <div class="about-text">
+                    <p>Moja przygoda z kosmosem zaczęła się od marzeń i miesięcznika „Młody Technik”. Jako uczeń szkoły im. Mikołaja Kopernika czułem niemal obowiązek, by osobiście sprawdzić, czy wszechświat naprawdę wygląda tak, jak opisują go astronomowie. W czasach, gdy o części było niezwykle trudno, zbudowałem swój pierwszy teleskop z soczewki od optyka i twardego, tekturowego tubusa. Nigdy nie zapomnę tej chwili, gdy przez własnoręcznie wykonany instrument pierwszy raz ujrzałem na żywo pierścienie Saturna.</p>
+                    
+                    <p><strong>Dziś wykorzystuję nowoczesne technologie, by z precyzją wycisnąć z matrycy każdy foton światła, który dotarł do nas z głębi kosmosu.</strong></p>
 
-                <h3>Wspólna droga przez gwiazdy</h3>
-                <p>Nic nie zastąpi jednak wypraw pod prawdziwie <strong>ciemne niebo, z dala od świateł cywilizacji.</strong> To tam, w gronie przyjaciół dzielących tę samą pasję, kosmos ukazuje swoje najsubtelniejsze detale. Wspólne sesje to nie tylko zachwyt nad ogromem wszechświata, ale też wzajemna pomoc przy rozwiązywaniu technicznych zagadek – od kapryśnego oprogramowania po plątaninę kabli w mroźne noce. Każde zdjęcie w mojej galerii jest zapisem tej fascynującej drogi, na którą Państwa zapraszam.</p>
+                    <h3>Tarnowskie Góry i wyzwanie czasu</h3>
+                    <p>Większość moich prac powstaje w rejonie <strong>Tarnowskich Gór (północna krawędź aglomeracji śląskiej)</strong>. Fotografowanie z miasta to ciągła walka z zanieczyszczeniem światłem, która uczy cierpliwości i wymaga stosowania specjalistycznych technik filtracji. Jednak astrofotografia to przede wszystkim podróż w czasie – rejestrując obiekty oddalone o miliony lat świetlnych, dotykam przeszłości, która dociera do nas z prędkością 300 tysięcy kilometrów na sekundę.</p>
+
+                    <h3>Wspólna droga przez gwiazdy</h3>
+                    <p>Nic nie zastąpi jednak wypraw pod prawdziwie <strong>ciemne niebo, z dala od świateł cywilizacji.</strong> To tam, w gronie przyjaciół dzielących tę samą pasję, kosmos ukazuje swoje najsubtelniejsze detale. Wspólne sesje to nie tylko zachwyt nad ogromem wszechświata, ale też wzajemna pomoc przy rozwiązywaniu technicznych zagadek – od kapryśnego oprogramowania po plątaninę kabli w mroźne noce. Każde zdjęcie w mojej galerii jest zapisem tej fascynującej drogi, na którą Państwa zapraszam.</p>
+                </div>
             </div>
-        </div>
-    </section>
+        </div> </section>
 
  <section id="historia">
     <h2>Trochę historii</h2>
@@ -774,9 +780,9 @@
                 </ul>
 
                 <div class="history-images">
-                    <img src="img/live/zacmienie2025_1.jpg" alt="Pokaz na żywo 1" onclick="openLightbox(this)">
-                    <img src="img/live/zacmienie2025_2.jpg" alt="Pokaz na żywo 2" onclick="openLightbox(this)">
-                    <img src="img/live/zacmienie2025_3.jpg" alt="Pokaz na żywo 3" onclick="openLightbox(this)">
+                    <img src="img/historia/zacmienie2025_1.jpg" alt="Pokaz na żywo 1" onclick="openLightbox(this)">
+                    <img src="img/historia/zacmienie2025_2.jpg" alt="Pokaz na żywo 2" onclick="openLightbox(this)">
+                    <img src="img/historia/zacmienie2025_3.jpg" alt="Pokaz na żywo 3" onclick="openLightbox(this)">
 					<img src="img/historia/biblioteka2024_3.jpg" alt="Wystawa 3" onclick="openLightbox(this)">
 					<img src="img/historia/biblioteka2024_10.jpg" alt="Wystawa 9" onclick="openLightbox(this)">
 					<img src="img/historia/kuznia_3.jpg" alt="Wystawa 12" onclick="openLightbox(this)">
@@ -901,22 +907,46 @@
 </section>
 
 <script>
-    // --- GALERIA: LIGHTBOX & ZOOM ---
-    function openLightbox(element) {
+    // --- FUNKCJA OTWIERANIA LIGHTBOXA ---
+function openLightbox(element, fullSizeSrc) {
         const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
-        lbImg.src = element.src;
+        
+        lbImg.src = fullSizeSrc || element.src;
         lbImg.classList.remove('zoomed'); 
         lbImg.style.transformOrigin = 'center';
+        
         lightbox.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; 
+        document.body.style.overflow = 'hidden';
+
+        // Aktywacja trybu pełnoekranowego
+        if (lightbox.requestFullscreen) {
+            lightbox.requestFullscreen();
+        } else if (lightbox.webkitRequestFullscreen) { /* Safari/iOS */
+            lightbox.webkitRequestFullscreen();
+        } else if (lightbox.msRequestFullscreen) { /* IE11 */
+            lightbox.msRequestFullscreen();
+        }
     }
 
-    function closeLightbox() {
+    // --- FUNKCJA ZAMYKANIA LIGHTBOXA ---
+	function closeLightbox() {
         document.getElementById('lightbox').style.display = 'none';
-        document.body.style.overflow = 'auto'; 
+        document.body.style.overflow = 'auto';
+
+        // Wyjście z trybu pełnoekranowego
+        if (document.fullscreenElement || document.webkitFullscreenElement) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
     }
 
+    // --- ZOOM W LIGHTBOXIE ---
     function toggleZoom(event) {
         event.stopPropagation(); 
         const lbImg = document.getElementById('lightbox-img');
@@ -937,12 +967,10 @@
 
     // --- FILTROWANIE GALERII ---
     function filterGallery(category, btn) {
-        const items = document.querySelectorAll('.item');
-        const buttons = document.querySelectorAll('.filter-btn');
-
-        buttons.forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
+        const items = document.querySelectorAll('.item');
         items.forEach(item => {
             if (category === 'all' || item.classList.contains(category)) {
                 item.style.display = 'flex';
@@ -958,14 +986,13 @@
 
     if (trigger) {
         trigger.addEventListener('click', function(e) {
-            // Jeśli klikamy wewnątrz boxa (np. w przycisk), nie przełączaj widoczności całego okna
             if (e.target.closest('#email-box')) return;
             box.style.display = box.style.display === 'none' ? 'block' : 'none';
         });
     }
 
     function copyEmail(event) {
-        if(event) event.stopPropagation(); // Zapobiega zamknięciu okienka
+        if(event) event.stopPropagation();
         const emailText = document.getElementById('my-email').innerText;
         navigator.clipboard.writeText(emailText).then(() => {
             const msg = document.getElementById('copy-msg');
@@ -977,7 +1004,6 @@
         });
     }
 
-    // Zamykanie Lightboxa klawiszem ESC i okienka maila po kliknięciu obok
     document.addEventListener('keydown', (e) => { if (e.key === "Escape") closeLightbox(); });
     document.addEventListener('click', (e) => {
         if (trigger && !trigger.contains(e.target)) box.style.display = 'none';

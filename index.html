@@ -201,49 +201,67 @@
             color: white;
         }
 		
-        /* LIGHTBOX STYLES */
+/* --- LIGHTBOX STYLES --- */
         #lightbox {
             display: none;
             position: fixed;
-            z-index: 10001;
-            top: 0;
+            z-index: 9999;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.98);
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            text-align: center;
         }
 
-        #lightbox img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border: none;
-            box-shadow: none;
+        .lightbox-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        /* Styl tylko dla zdjęcia w powiększeniu */
+        #lightbox-img {
+            height: 100vh !important;
+            width: auto !important;
+            max-width: none !important;
+            display: inline-block;
+            vertical-align: middle;
+            position: relative;
+            z-index: 10001;
             transition: transform 0.2s ease-out;
             cursor: zoom-in;
-            user-select: none;
-            transform-origin: center;
         }
 
-        #lightbox img.zoomed {
-            transform: scale(2.5);
+        #lightbox-img.zoomed {
+            height: 200vh !important;
             cursor: zoom-out;
         }
 
-        .close-btn {
+        .close-lightbox {
             position: fixed;
             top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 45px;
+            right: 40px;
+            color: white !important;
+            font-size: 60px !important;
             font-weight: bold;
             cursor: pointer;
-            z-index: 10002;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 10005;
+            text-shadow: 0 0 15px rgba(0,0,0,1);
+            line-height: 1;
+        }
+
+        /* --- NAPRAWA ZDJĘCIA PROFILOWEGO (O MNIE) --- */
+        .about-grid img {
+            width: 300px !important; /* Szerokość Twojego zdjęcia obok tekstu */
+            height: auto !important; /* Naprawia rozciągnięcie na całą stronę */
+            max-width: 100%;
+            border-radius: 10px;
+            object-fit: cover;
         }
 
         /* O MNIE, HISTORIA, SPRZET STYLES */
@@ -304,14 +322,25 @@
             nav ul li { margin: 0; }
             nav ul li a { font-size: 0.95em; padding: 10px 15px; white-space: nowrap; }
         }
+		
+		/* NAPRAWA ZDJĘCIA W SEKCJI O MNIE */
+        .about-grid img {
+            height: auto !important; /* To naprawia rozciągnięcie */
+            max-width: 100%;
+            width: 400px; /* Tutaj możesz ustawić szerokość zdjęcia, jaka Ci pasuje */
+            object-fit: cover;
+            border-radius: 10px;
+        }
+		
     </style>
 </head>
 <body style="margin: 0; padding: 0; background-color: #050507; color: #e0e0e0; font-family: 'Inter', sans-serif; line-height: 1.6; scroll-behavior: smooth;">
 
-	<div id="lightbox" onclick="closeLightbox()">
-		<span class="close-btn">&times;</span>
-		<img id="lightbox-img" src="" alt="Powiększenie" onclick="toggleZoom(event)">
-	</div>
+<div id="lightbox">
+        <span class="close-lightbox" onclick="closeLightbox()">&times;</span>
+        <div class="lightbox-overlay" onclick="closeLightbox()"></div>
+        <img id="lightbox-img" src="" alt="" onclick="toggleZoom(event)">
+    </div>
 
 <nav>
     <div class="logo">Aleksander Nowak | <span>Astrofotografia</span></div>
@@ -710,7 +739,7 @@
     <h2>Trochę historii</h2>
     <div class="history-container">
 
-        <div class="history-item">
+<div class="history-item">
             <div class="history-dot"></div>
             <h3>Ewolucja sprzętowa</h3>
             <div class="history-meta">Technologia i optyka</div>
@@ -723,15 +752,15 @@
                 </ul>
 
                 <div class="history-images">
-                    <img src="img/historia/historia%20(1).jpg" alt="Historia 1" onclick="openLightbox(this)">
-                    <img src="img/historia/historia%20(2).jpg" alt="Historia 2" onclick="openLightbox(this)">
-                    <img src="img/historia/historia%20(3).jpg" alt="Historia 3" onclick="openLightbox(this)">
-                    <img src="img/historia/historia%20(4).jpg" alt="Historia 4" onclick="openLightbox(this)">
-                    <img src="img/historia/historia%20(5).jpg" alt="Historia 5" onclick="openLightbox(this)">
-                    <img src="img/historia/historia%20(6).jpg" alt="Historia 6" onclick="openLightbox(this)">
-                    <img src="img/historia/historia%20(7).jpg" alt="Historia 7" onclick="openLightbox(this)">
-                    <img src="img/historia/historia%20(8).jpg" alt="Historia 8" onclick="openLightbox(this)">
-                    <img src="img/historia/historia%20(9).jpg" alt="Historia 9" onclick="openLightbox(this)">                        
+                    <img src="img/historia/historia%20(1).jpg" alt="Historia 1" onclick="openLightbox(this, 'img/historia/historia%20(1).jpg')">
+                    <img src="img/historia/historia%20(2).jpg" alt="Historia 2" onclick="openLightbox(this, 'img/historia/historia%20(2).jpg')">
+                    <img src="img/historia/historia%20(3).jpg" alt="Historia 3" onclick="openLightbox(this, 'img/historia/historia%20(3).jpg')">
+                    <img src="img/historia/historia%20(4).jpg" alt="Historia 4" onclick="openLightbox(this, 'img/historia/historia%20(4).jpg')">
+                    <img src="img/historia/historia%20(5).jpg" alt="Historia 5" onclick="openLightbox(this, 'img/historia/historia%20(5).jpg')">
+                    <img src="img/historia/historia%20(6).jpg" alt="Historia 6" onclick="openLightbox(this, 'img/historia/historia%20(6).jpg')">
+                    <img src="img/historia/historia%20(7).jpg" alt="Historia 7" onclick="openLightbox(this, 'img/historia/historia%20(7).jpg')">
+                    <img src="img/historia/historia%20(8).jpg" alt="Historia 8" onclick="openLightbox(this, 'img/historia/historia%20(8).jpg')">
+                    <img src="img/historia/historia%20(9).jpg" alt="Historia 9" onclick="openLightbox(this, 'img/historia/historia%20(9).jpg')">                        
                 </div>
             </div>
         </div>
@@ -749,20 +778,43 @@
                 </ul>
                 
                 <div class="history-images">
-                    <img src="img/historia/biblioteka2024_1.jpg" alt="Wystawa 1" onclick="openLightbox(this)">
-                    <img src="img/historia/biblioteka2024_2.jpg" alt="Wystawa 2" onclick="openLightbox(this)">
-                    <img src="img/historia/biblioteka2024_4.jpg" alt="Wystawa 4" onclick="openLightbox(this)">
-                    <img src="img/historia/biblioteka2024_5.jpg" alt="Wystawa 5" onclick="openLightbox(this)">
-                    <img src="img/historia/biblioteka2024_6.jpg" alt="Wystawa 6" onclick="openLightbox(this)">
-                    <img src="img/historia/biblioteka2024_7.jpg" alt="Wystawa 7" onclick="openLightbox(this)">
-                    <img src="img/historia/biblioteka2024_8.jpg" alt="Wystawa 8" onclick="openLightbox(this)">
-                    <img src="img/historia/biblioteka2024_9.jpg" alt="Wystawa 9" onclick="openLightbox(this)">
-                    <img src="img/historia/kuznia_1.jpg" alt="Wystawa 10" onclick="openLightbox(this)">
-                    <img src="img/historia/kuznia_2.jpg" alt="Wystawa 11" onclick="openLightbox(this)">
-                    <img src="img/historia/kuznia_5.jpg" alt="Wystawa 14" onclick="openLightbox(this)">
-					<img src="img/historia/slow_1.jpg" alt="Wystawa 14" onclick="openLightbox(this)">
-					<img src="img/historia/slow_2.jpg" alt="Wystawa 14" onclick="openLightbox(this)">
+                    <img src="img/historia/biblioteka2024_1.jpg" alt="Wystawa 1" onclick="openLightbox(this, 'img/historia/biblioteka2024_1.jpg')">
+                    <img src="img/historia/biblioteka2024_2.jpg" alt="Wystawa 2" onclick="openLightbox(this, 'img/historia/biblioteka2024_2.jpg')">
+                    <img src="img/historia/biblioteka2024_4.jpg" alt="Wystawa 4" onclick="openLightbox(this, 'img/historia/biblioteka2024_4.jpg')">
+                    <img src="img/historia/biblioteka2024_5.jpg" alt="Wystawa 5" onclick="openLightbox(this, 'img/historia/biblioteka2024_5.jpg')">
+                    <img src="img/historia/biblioteka2024_6.jpg" alt="Wystawa 6" onclick="openLightbox(this, 'img/historia/biblioteka2024_6.jpg')">
+                    <img src="img/historia/biblioteka2024_7.jpg" alt="Wystawa 7" onclick="openLightbox(this, 'img/historia/biblioteka2024_7.jpg')">
+                    <img src="img/historia/biblioteka2024_8.jpg" alt="Wystawa 8" onclick="openLightbox(this, 'img/historia/biblioteka2024_8.jpg')">
+                    <img src="img/historia/biblioteka2024_9.jpg" alt="Wystawa 9" onclick="openLightbox(this, 'img/historia/biblioteka2024_9.jpg')">
+                    <img src="img/historia/kuznia_1.jpg" alt="Wystawa 10" onclick="openLightbox(this, 'img/historia/kuznia_1.jpg')">
+                    <img src="img/historia/kuznia_2.jpg" alt="Wystawa 11" onclick="openLightbox(this, 'img/historia/kuznia_2.jpg')">
+                    <img src="img/historia/kuznia_5.jpg" alt="Wystawa 14" onclick="openLightbox(this, 'img/historia/kuznia_5.jpg')">
+					<img src="img/historia/slow_1.jpg" alt="Wystawa 14" onclick="openLightbox(this, 'img/historia/slow_1.jpg')">
+					<img src="img/historia/slow_2.jpg" alt="Wystawa 14" onclick="openLightbox(this, 'img/historia/slow_2.jpg')">
 					
+                 </div>
+            </div>
+        </div>
+
+        <div class="history-item">
+            <div class="history-dot"></div>
+            <h3>Astronomia na żywo</h3>
+            <div class="history-meta">Popularyzacja pasji</div>
+            <div class="history-content">
+                <p>Jest nas więcej! Wraz z Polskim Towarzystwem Miłośników Astronomii (PTMA) oraz grupą pasjonatów organizujemy:</p>
+                <ul>
+                    <li><strong>Obserwacje wizualne:</strong> Wspólne odkrywanie obiektów głębokiego nieba oraz planet Układu Słonecznego. Zaćmienia Słońca i Księżyca.</li>
+                    <li><strong>Prelekcje:</strong> Wykłady poświęcone podstawom astrofotografii, technikom zbierania materiału oraz obróbce cyfrowej zdjęć.</li>
+                    <li><strong>Warsztaty sprzętowe:</strong> Prezentacja możliwości montaży paralaktycznych i różnych systemów optycznych w praktyce.</li>
+                </ul>
+
+                <div class="history-images">
+                    <img src="img/historia/zacmienie2025_1.jpg" alt="Pokaz na żywo 1" onclick="openLightbox(this, 'img/historia/zacmienie2025_1.jpg')">
+                    <img src="img/historia/zacmienie2025_2.jpg" alt="Pokaz na żywo 2" onclick="openLightbox(this, 'img/historia/zacmienie2025_2.jpg')">
+                    <img src="img/historia/zacmienie2025_3.jpg" alt="Pokaz na żywo 3" onclick="openLightbox(this, 'img/historia/zacmienie2025_3.jpg')">
+					<img src="img/historia/biblioteka2024_3.jpg" alt="Wystawa 3" onclick="openLightbox(this, 'img/historia/biblioteka2024_3.jpg')">
+					<img src="img/historia/biblioteka2024_10.jpg" alt="Wystawa 9" onclick="openLightbox(this, 'img/historia/biblioteka2024_10.jpg')">
+					<img src="img/historia/kuznia_3.jpg" alt="Wystawa 12" onclick="openLightbox(this, 'img/historia/kuznia_3.jpg')">
                  </div>
             </div>
         </div>
@@ -907,52 +959,37 @@
 </section>
 
 <script>
-    // --- FUNKCJA OTWIERANIA LIGHTBOXA ---
-function openLightbox(element, fullSizeSrc) {
-        const lightbox = document.getElementById('lightbox');
+function openLightbox(element, highResSrc) {
+        const lb = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
-        
-        lbImg.src = fullSizeSrc || element.src;
-        lbImg.classList.remove('zoomed'); 
-        lbImg.style.transformOrigin = 'center';
-        
-        lightbox.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+        lbImg.src = highResSrc;
+        lb.style.display = 'block'; // Pokazuje lightbox
+        document.body.style.overflow = 'hidden'; // Blokuje przewijanie strony
 
-        // Aktywacja trybu pełnoekranowego
-        if (lightbox.requestFullscreen) {
-            lightbox.requestFullscreen();
-        } else if (lightbox.webkitRequestFullscreen) { /* Safari/iOS */
-            lightbox.webkitRequestFullscreen();
-        } else if (lightbox.msRequestFullscreen) { /* IE11 */
-            lightbox.msRequestFullscreen();
-        }
-    }
-
-    // --- FUNKCJA ZAMYKANIA LIGHTBOXA ---
-	function closeLightbox() {
-        document.getElementById('lightbox').style.display = 'none';
-        document.body.style.overflow = 'auto';
-
-        // Wyjście z trybu pełnoekranowego
-        if (document.fullscreenElement || document.webkitFullscreenElement) {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
+        lbImg.onload = function() {
+            if (lbImg.offsetWidth > lb.offsetWidth) {
+                lb.scrollLeft = (lbImg.offsetWidth - lb.offsetWidth) / 2;
             }
-        }
+        };
     }
 
-    // --- ZOOM W LIGHTBOXIE ---
-    function toggleZoom(event) {
-        event.stopPropagation(); 
+	function closeLightbox() {
+        const lb = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
+        lb.style.display = 'none'; // To odblokowuje menu galerii
+        document.body.style.overflow = 'auto'; 
+        lbImg.classList.remove('zoomed');
+        lbImg.style.transform = 'scale(1)';
+    }
+
+    function toggleZoom(event) {
+        event.stopPropagation(); // Zatrzymuje zamykanie okna przy kliknięciu w zdjęcie
+        const lbImg = document.getElementById('lightbox-img');
+        const lbContainer = document.getElementById('lightbox');
         const isZoomed = lbImg.classList.toggle('zoomed');
 
         if (isZoomed) {
+            lbContainer.style.overflowY = 'auto';
             lbImg.onmousemove = function(e) {
                 const rect = lbImg.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -960,8 +997,12 @@ function openLightbox(element, fullSizeSrc) {
                 lbImg.style.transformOrigin = `${x}% ${y}%`;
             };
         } else {
+            lbContainer.style.overflowY = 'hidden';
             lbImg.onmousemove = null;
             lbImg.style.transformOrigin = 'center';
+            lbImg.style.transform = 'scale(1)';
+            // Po wyjściu z zooma wycentruj szerokie zdjęcie
+            lbContainer.scrollLeft = (lbImg.offsetWidth - lbContainer.offsetWidth) / 2;
         }
     }
 

@@ -202,43 +202,53 @@
         }
 		
         /* LIGHTBOX STYLES */
-		#lightbox {
+/* LIGHTBOX STYLES */
+        #lightbox {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: #000;
+            background-color: black !important;
             z-index: 9999;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            /* Flexbox dla standardowego widoku */
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
         }
 
-		#lightbox img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); /* Idealne centrowanie */
+        /* To rozwiązuje problem przesunięcia w lewo w trybie Fullscreen na telefonach */
+        #lightbox:fullscreen {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+
+        #lightbox img {
             max-width: 100%;
-            max-height: 100%;
+            max-height: 100vw;
+			left: 0;
             width: auto;
             height: auto;
             object-fit: contain;
-            border: none;
-            box-shadow: none;
-            transition: transform 0.2s ease-out; /* Pozwalamy na zoom */
+            display: block;
+            margin: auto; /* Kluczowe dla centrowania we Flexbox */
+            transition: transform 0.2s ease-out;
             cursor: zoom-in;
             user-select: none;
-            display: block;
+            flex-shrink: 0; /* Zapobiega zgniataniu zdjęcia */
         }
 
-		#lightbox img.zoomed {
+        #lightbox img.zoomed {
+            max-width: none;
+            max-height: none;
             cursor: zoom-out;
-            transform: translate(-50%, -50%) scale(2); /* Zachowujemy środek przy zoomie */
+            transform: scale(2);
+            margin: auto; /* Pozwala na scrollowanie we wszystkich kierunkach */
         }
-
         .close-btn {
             position: fixed;
             top: 20px;
@@ -914,25 +924,25 @@
 <script>
     // --- FUNKCJA OTWIERANIA LIGHTBOXA ---
 function openLightbox(element, fullSizeSrc) {
-        const lightbox = document.getElementById('lightbox');
-        const lbImg = document.getElementById('lightbox-img');
-        
-        lbImg.src = fullSizeSrc || element.src;
-        lbImg.classList.remove('zoomed'); 
-        lbImg.style.transformOrigin = 'center';
-        
-        lightbox.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    
+    lbImg.src = fullSizeSrc || element.src;
+    lbImg.classList.remove('zoomed'); 
+    
+    lightbox.style.display = 'flex'; // Upewniamy się, że jest flex przed fullscreenem
+    document.body.style.overflow = 'hidden';
 
-        // Aktywacja trybu pełnoekranowego
-        if (lightbox.requestFullscreen) {
-            lightbox.requestFullscreen();
-        } else if (lightbox.webkitRequestFullscreen) { /* Safari/iOS */
-            lightbox.webkitRequestFullscreen();
-        } else if (lightbox.msRequestFullscreen) { /* IE11 */
-            lightbox.msRequestFullscreen();
-        }
+    // Próba wejścia w Fullscreen
+    const requestMethod = lightbox.requestFullscreen || 
+                          lightbox.webkitRequestFullscreen || 
+                          lightbox.webkitRequestFullScreen || 
+                          lightbox.msRequestFullscreen;
+
+    if (requestMethod) {
+        requestMethod.call(lightbox);
     }
+}
 
     // --- FUNKCJA ZAMYKANIA LIGHTBOXA ---
 	function closeLightbox() {

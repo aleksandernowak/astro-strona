@@ -263,10 +263,13 @@
             cursor: zoom-in;
         }
 
-        #lightbox-img.zoomed {
-            height: 100vh !important;
-            cursor: zoom-out;
-        }
+		#lightbox-img.zoomed {
+			height: 200vh !important; /* Zwiększamy wysokość, aby umożliwić zoom */
+			transform: scale(1.0); 
+			cursor: zoom-out;
+			margin: auto; /* Zmiana z 50vh 50vw na auto */
+			display: block;
+		}
 
         .close-lightbox {
             position: fixed;
@@ -976,7 +979,6 @@
         // Reset ustawień kontenera
         lightbox.style.overflow = 'hidden';
         lbImg.style.cursor = 'zoom-in';
-        lbImg.style.transform = 'scale(1)';
     }
 
     function closeLightbox() {
@@ -1014,9 +1016,14 @@ function toggleZoom(event) {
         
         // Wyśrodkowanie zdjęcia po włączeniu zooma
         setTimeout(() => {
-            lbContainer.scrollLeft = (lbImg.offsetWidth - lbContainer.offsetWidth) / 2;
-            lbContainer.scrollTop = (lbImg.offsetHeight - lbContainer.offsetHeight) / 2;
-        }, 50); // Zwiększony timeout dla lepszej synchronizacji z CSS
+            const scrollX = (lbImg.scrollWidth - lbContainer.clientWidth) / 2;
+            const scrollY = (lbImg.scrollHeight - lbContainer.clientHeight) / 2;
+            lbContainer.scrollTo({
+                left: scrollX,
+                top: scrollY,
+                behavior: 'smooth'
+            });
+        }, 10);
 
     } else {
         lbContainer.style.overflow = 'hidden';

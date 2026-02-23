@@ -555,7 +555,7 @@
                     </div>
                     <a href="https://app.astrobin.com/u/Aleksander_Nowak?i=ifz1tc&r=B#gallery" class="astrobin-link" target="_blank">Pełna karta na AstroBin</a>
                 </div>
-            </div>
+            </div>     
 
             <div class="item uklad-sloneczny">
                 <img src="img/miniaturki/galeria/Ksiezyc_1_mini.jpg" alt="Księżyc" onclick="openLightbox(this, 'img/galeria/Ksiezyc_1.jpg')" loading="lazy">
@@ -996,7 +996,7 @@
     let isDragging = false;
     let startX, startY, scrollLeft, scrollTop;
 
-    function toggleZoom(event) {
+function toggleZoom(event) {
         if (event) event.stopPropagation();
         
         const lbImg = document.getElementById('lightbox-img');
@@ -1008,11 +1008,16 @@
             lbContainer.style.overflow = 'auto';
             lbImg.style.cursor = 'grab';
             
+            // Obsługa Myszy
             lbContainer.addEventListener('mousedown', startDragging);
             window.addEventListener('mousemove', drag);
             window.addEventListener('mouseup', stopDragging);
             
-            // Wyśrodkowanie zdjęcia po włączeniu zooma
+            // Obsługa Dotyku (Swipe)
+            lbContainer.addEventListener('touchstart', startDragging, {passive: false});
+            window.addEventListener('touchmove', drag, {passive: false});
+            window.addEventListener('touchend', stopDragging);
+            
             setTimeout(() => {
                 lbContainer.scrollLeft = (lbImg.offsetWidth - lbContainer.offsetWidth) / 2;
                 lbContainer.scrollTop = (lbImg.offsetHeight - lbContainer.offsetHeight) / 2;
@@ -1026,6 +1031,10 @@
             lbContainer.removeEventListener('mousedown', startDragging);
             window.removeEventListener('mousemove', drag);
             window.removeEventListener('mouseup', stopDragging);
+
+            lbContainer.removeEventListener('touchstart', startDragging);
+            window.removeEventListener('touchmove', drag);
+            window.removeEventListener('touchend', stopDragging);
             
             lbContainer.scrollLeft = 0;
             lbContainer.scrollTop = 0;
@@ -1040,8 +1049,12 @@
         isDragging = true;
         lbImg.style.cursor = 'grabbing';
         
-        startX = e.pageX - lbContainer.offsetLeft;
-        startY = e.pageY - lbContainer.offsetTop;
+        // Pobieranie pozycji dla myszy lub dotyku
+        const pageX = e.pageX || e.touches[0].pageX;
+        const pageY = e.pageY || e.touches[0].pageY;
+        
+        startX = pageX - lbContainer.offsetLeft;
+        startY = pageY - lbContainer.offsetTop;
         scrollLeft = lbContainer.scrollLeft;
         scrollTop = lbContainer.scrollTop;
     }
@@ -1054,11 +1067,18 @@
 
     function drag(e) {
         if (!isDragging) return;
-        e.preventDefault();
         
         const lbContainer = document.getElementById('lightbox');
-        const x = e.pageX - lbContainer.offsetLeft;
-        const y = e.pageY - lbContainer.offsetTop;
+        
+        // Pobieranie pozycji dla myszy lub dotyku
+        const pageX = e.pageX || e.touches[0].pageX;
+        const pageY = e.pageY || e.touches[0].pageY;
+        
+        // Zapobieganie domyślnemu przewijaniu strony podczas swipe
+        if (e.type === 'touchmove') e.preventDefault();
+
+        const x = pageX - lbContainer.offsetLeft;
+        const y = pageY - lbContainer.offsetTop;
         
         const walkX = (x - startX) * 1.5; 
         const walkY = (y - startY) * 1.5;
@@ -1066,7 +1086,6 @@
         lbContainer.scrollLeft = scrollLeft - walkX;
         lbContainer.scrollTop = scrollTop - walkY;
     }
-	
     // --- FILTROWANIE GALERII ---
     function filterGallery(category, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));

@@ -996,7 +996,7 @@
     let isDragging = false;
     let startX, startY, scrollLeft, scrollTop;
 
-function toggleZoom(event) {
+    function toggleZoom(event) {
         if (event) event.stopPropagation();
         
         const lbImg = document.getElementById('lightbox-img');
@@ -1008,16 +1008,11 @@ function toggleZoom(event) {
             lbContainer.style.overflow = 'auto';
             lbImg.style.cursor = 'grab';
             
-            // Obsługa Myszy
             lbContainer.addEventListener('mousedown', startDragging);
             window.addEventListener('mousemove', drag);
             window.addEventListener('mouseup', stopDragging);
             
-            // Obsługa Dotyku (Swipe)
-            lbContainer.addEventListener('touchstart', startDragging, {passive: false});
-            window.addEventListener('touchmove', drag, {passive: false});
-            window.addEventListener('touchend', stopDragging);
-            
+            // Wyśrodkowanie zdjęcia po włączeniu zooma
             setTimeout(() => {
                 lbContainer.scrollLeft = (lbImg.offsetWidth - lbContainer.offsetWidth) / 2;
                 lbContainer.scrollTop = (lbImg.offsetHeight - lbContainer.offsetHeight) / 2;
@@ -1031,10 +1026,6 @@ function toggleZoom(event) {
             lbContainer.removeEventListener('mousedown', startDragging);
             window.removeEventListener('mousemove', drag);
             window.removeEventListener('mouseup', stopDragging);
-
-            lbContainer.removeEventListener('touchstart', startDragging);
-            window.removeEventListener('touchmove', drag);
-            window.removeEventListener('touchend', stopDragging);
             
             lbContainer.scrollLeft = 0;
             lbContainer.scrollTop = 0;
@@ -1049,12 +1040,8 @@ function toggleZoom(event) {
         isDragging = true;
         lbImg.style.cursor = 'grabbing';
         
-        // Pobieranie pozycji dla myszy lub dotyku
-        const pageX = e.pageX || e.touches[0].pageX;
-        const pageY = e.pageY || e.touches[0].pageY;
-        
-        startX = pageX - lbContainer.offsetLeft;
-        startY = pageY - lbContainer.offsetTop;
+        startX = e.pageX - lbContainer.offsetLeft;
+        startY = e.pageY - lbContainer.offsetTop;
         scrollLeft = lbContainer.scrollLeft;
         scrollTop = lbContainer.scrollTop;
     }
@@ -1067,18 +1054,11 @@ function toggleZoom(event) {
 
     function drag(e) {
         if (!isDragging) return;
+        e.preventDefault();
         
         const lbContainer = document.getElementById('lightbox');
-        
-        // Pobieranie pozycji dla myszy lub dotyku
-        const pageX = e.pageX || e.touches[0].pageX;
-        const pageY = e.pageY || e.touches[0].pageY;
-        
-        // Zapobieganie domyślnemu przewijaniu strony podczas swipe
-        if (e.type === 'touchmove') e.preventDefault();
-
-        const x = pageX - lbContainer.offsetLeft;
-        const y = pageY - lbContainer.offsetTop;
+        const x = e.pageX - lbContainer.offsetLeft;
+        const y = e.pageY - lbContainer.offsetTop;
         
         const walkX = (x - startX) * 1.5; 
         const walkY = (y - startY) * 1.5;
@@ -1086,6 +1066,7 @@ function toggleZoom(event) {
         lbContainer.scrollLeft = scrollLeft - walkX;
         lbContainer.scrollTop = scrollTop - walkY;
     }
+	
     // --- FILTROWANIE GALERII ---
     function filterGallery(category, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));

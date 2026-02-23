@@ -264,7 +264,7 @@
         }
 
         #lightbox-img.zoomed {
-            height: 200vh !important;
+            height: 100vh !important;
             cursor: zoom-out;
         }
 
@@ -996,41 +996,41 @@
     let isDragging = false;
     let startX, startY, scrollLeft, scrollTop;
 
-    function toggleZoom(event) {
-        if (event) event.stopPropagation();
-        
-        const lbImg = document.getElementById('lightbox-img');
-        const lbContainer = document.getElementById('lightbox');
-        
-        const isZoomed = lbImg.classList.toggle('zoomed');
+function toggleZoom(event) {
+    if (event) event.stopPropagation();
+    
+    const lbImg = document.getElementById('lightbox-img');
+    const lbContainer = document.getElementById('lightbox');
+    
+    const isZoomed = lbImg.classList.toggle('zoomed');
 
-        if (isZoomed) {
-            lbContainer.style.overflow = 'auto';
-            lbImg.style.cursor = 'grab';
-            
-            lbContainer.addEventListener('mousedown', startDragging);
-            window.addEventListener('mousemove', drag);
-            window.addEventListener('mouseup', stopDragging);
-            
-            // Wyśrodkowanie zdjęcia po włączeniu zooma
-            setTimeout(() => {
-                lbContainer.scrollLeft = (lbImg.offsetWidth - lbContainer.offsetWidth) / 2;
-                lbContainer.scrollTop = (lbImg.offsetHeight - lbContainer.offsetHeight) / 2;
-            }, 10);
+    if (isZoomed) {
+        lbContainer.style.overflow = 'auto';
+        lbImg.style.cursor = 'grab';
+        
+        lbContainer.addEventListener('mousedown', startDragging);
+        window.addEventListener('mousemove', drag);
+        window.addEventListener('mouseup', stopDragging);
+        
+        // Wyśrodkowanie zdjęcia po włączeniu zooma
+        setTimeout(() => {
+            lbContainer.scrollLeft = (lbImg.offsetWidth - lbContainer.offsetWidth) / 2;
+            lbContainer.scrollTop = (lbImg.offsetHeight - lbContainer.offsetHeight) / 2;
+        }, 50); // Zwiększony timeout dla lepszej synchronizacji z CSS
 
-        } else {
-            lbContainer.style.overflow = 'hidden';
-            lbImg.style.cursor = 'zoom-in';
-            lbImg.style.transform = 'scale(1)';
-            
-            lbContainer.removeEventListener('mousedown', startDragging);
-            window.removeEventListener('mousemove', drag);
-            window.removeEventListener('mouseup', stopDragging);
-            
-            lbContainer.scrollLeft = 0;
-            lbContainer.scrollTop = 0;
-        }
+    } else {
+        lbContainer.style.overflow = 'hidden';
+        lbImg.style.cursor = 'zoom-in';
+        // USUNIĘTO: lbImg.style.transform = 'scale(1)'; - to blokowało CSS
+        
+        lbContainer.removeEventListener('mousedown', startDragging);
+        window.removeEventListener('mousemove', drag);
+        window.removeEventListener('mouseup', stopDragging);
+        
+        lbContainer.scrollLeft = 0;
+        lbContainer.scrollTop = 0;
     }
+}
 
     function startDragging(e) {
         const lbContainer = document.getElementById('lightbox');

@@ -971,13 +971,18 @@
         const lbImg = document.getElementById('lightbox-img');
         
         lbImg.src = fullSizeSrc;
-		lbImg.ondragstart = () => false;
-        lbImg.classList.remove('zoomed'); // Zawsze otwieraj bez zooma
+        lbImg.ondragstart = () => false;
+        lbImg.classList.remove('zoomed'); 
         lightbox.style.display = 'block';
-        document.body.style.overflow = 'hidden'; // Blokada przewijania strony
+        document.body.style.overflow = 'hidden'; 
         
-        // Reset ustawień kontenera
-        lightbox.style.overflow = 'hidden';
+        // Wyśrodkowanie zdjęcia zaraz po otwarciu
+        lbImg.onload = function() {
+            lightbox.scrollLeft = (lbImg.offsetWidth - lightbox.clientWidth) / 2;
+            lightbox.scrollTop = (lbImg.offsetHeight - lightbox.clientHeight) / 2;
+        };
+
+        lightbox.style.overflow = 'auto'; // Zmienione z 'hidden' na 'auto', aby scroll działał od razu
         lbImg.style.cursor = 'zoom-in';
     }
 

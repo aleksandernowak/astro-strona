@@ -216,6 +216,32 @@
             white-space: nowrap;
             text-align: center;
         }
+		
+		/* STYLIZACJA PASKÓW PRZEWIJANIA DLA LIGHTBOXA */
+        #lightbox::-webkit-scrollbar {
+            width: 18px; /* Jeszcze nieco szerszy dla wygody */
+            height: 18px;
+        }
+
+        #lightbox::-webkit-scrollbar-track {
+            background: #050507;
+        }
+
+        #lightbox::-webkit-scrollbar-thumb {
+            background: #4a90e2;
+            border-radius: 10px;
+            border: 4px solid #050507; /* Grubszy margines dla efektu "pływającego" suwaka */
+        }
+
+        #lightbox::-webkit-scrollbar-thumb:hover {
+            background: #357abd;
+        }
+
+        /* Obsługa Firefox */
+        #lightbox {
+            scrollbar-width: auto;
+            scrollbar-color: #4a90e2 #050507;
+        }
 
         .lightbox-overlay {
             position: fixed;
@@ -936,53 +962,111 @@
 </section>
 
 <script>
-function openLightbox(element, highResSrc) {
-        const lb = document.getElementById('lightbox');
+// --- FUNKCJE PODSTAWOWE LIGHTBOXA ---
+    function openLightbox(element, fullSizeSrc) {
+        const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
-        lbImg.src = highResSrc;
-        lb.style.display = 'block'; // Pokazuje lightbox
-        document.body.style.overflow = 'hidden'; // Blokuje przewijanie strony
-
-        lbImg.onload = function() {
-            if (lbImg.offsetWidth > lb.offsetWidth) {
-                lb.scrollLeft = (lbImg.offsetWidth - lb.offsetWidth) / 2;
-            }
-        };
-    }
-
-	function closeLightbox() {
-        const lb = document.getElementById('lightbox');
-        const lbImg = document.getElementById('lightbox-img');
-        lb.style.display = 'none'; // To odblokowuje menu galerii
-        document.body.style.overflow = 'auto'; 
-        lbImg.classList.remove('zoomed');
+        
+        lbImg.src = fullSizeSrc;
+		lbImg.ondragstart = () => false;
+        lbImg.classList.remove('zoomed'); // Zawsze otwieraj bez zooma
+        lightbox.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Blokada przewijania strony
+        
+        // Reset ustawień kontenera
+        lightbox.style.overflow = 'hidden';
+        lbImg.style.cursor = 'zoom-in';
         lbImg.style.transform = 'scale(1)';
     }
 
-    function toggleZoom(event) {
-        event.stopPropagation(); // Zatrzymuje zamykanie okna przy kliknięciu w zdjęcie
+    function closeLightbox() {
+        const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
-        const lbContainer = document.getElementById('lightbox');
-        const isZoomed = lbImg.classList.toggle('zoomed');
-
-        if (isZoomed) {
-            lbContainer.style.overflowY = 'auto';
-            lbImg.onmousemove = function(e) {
-                const rect = lbImg.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                lbImg.style.transformOrigin = `${x}% ${y}%`;
-            };
-        } else {
-            lbContainer.style.overflowY = 'hidden';
-            lbImg.onmousemove = null;
-            lbImg.style.transformOrigin = 'center';
-            lbImg.style.transform = 'scale(1)';
-            // Po wyjściu z zooma wycentruj szerokie zdjęcie
-            lbContainer.scrollLeft = (lbImg.offsetWidth - lbContainer.offsetWidth) / 2;
+        
+        lightbox.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Przywrócenie przewijania strony
+        
+        // Wyłączamy zoom jeśli był aktywny
+        if(lbImg.classList.contains('zoomed')) {
+            toggleZoom();
         }
     }
 
+    // --- ZAAWANSOWANA OBSŁUGA ZOOM I PRZESUWANIA (DRAG) ---
+    let isDragging = false;
+    let startX, startY, scrollLeft, scrollTop;
+
+    function toggleZoom(event) {
+        if (event) event.stopPropagation();
+        
+        const lbImg = document.getElementById('lightbox-img');
+        const lbContainer = document.getElementById('lightbox');
+        
+        const isZoomed = lbImg.classList.toggle('zoomed');
+
+        if (isZoomed) {
+            lbContainer.style.overflow = 'auto';
+            lbImg.style.cursor = 'grab';
+            
+            lbContainer.addEventListener('mousedown', startDragging);
+            window.addEventListener('mousemove', drag);
+            window.addEventListener('mouseup', stopDragging);
+            
+            // Wyśrodkowanie zdjęcia po włączeniu zooma
+            setTimeout(() => {
+                lbContainer.scrollLeft = (lbImg.offsetWidth - lbContainer.offsetWidth) / 2;
+                lbContainer.scrollTop = (lbImg.offsetHeight - lbContainer.offsetHeight) / 2;
+            }, 10);
+
+        } else {
+            lbContainer.style.overflow = 'hidden';
+            lbImg.style.cursor = 'zoom-in';
+            lbImg.style.transform = 'scale(1)';
+            
+            lbContainer.removeEventListener('mousedown', startDragging);
+            window.removeEventListener('mousemove', drag);
+            window.removeEventListener('mouseup', stopDragging);
+            
+            lbContainer.scrollLeft = 0;
+            lbContainer.scrollTop = 0;
+        }
+    }
+
+    function startDragging(e) {
+        const lbContainer = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightbox-img');
+        if (!lbImg.classList.contains('zoomed')) return;
+        
+        isDragging = true;
+        lbImg.style.cursor = 'grabbing';
+        
+        startX = e.pageX - lbContainer.offsetLeft;
+        startY = e.pageY - lbContainer.offsetTop;
+        scrollLeft = lbContainer.scrollLeft;
+        scrollTop = lbContainer.scrollTop;
+    }
+
+    function stopDragging() {
+        isDragging = false;
+        const lbImg = document.getElementById('lightbox-img');
+        if (lbImg && lbImg.classList.contains('zoomed')) lbImg.style.cursor = 'grab';
+    }
+
+    function drag(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        
+        const lbContainer = document.getElementById('lightbox');
+        const x = e.pageX - lbContainer.offsetLeft;
+        const y = e.pageY - lbContainer.offsetTop;
+        
+        const walkX = (x - startX) * 1.5; 
+        const walkY = (y - startY) * 1.5;
+        
+        lbContainer.scrollLeft = scrollLeft - walkX;
+        lbContainer.scrollTop = scrollTop - walkY;
+    }
+	
     // --- FILTROWANIE GALERII ---
     function filterGallery(category, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));

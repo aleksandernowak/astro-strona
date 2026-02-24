@@ -211,10 +211,13 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.98);
-            overflow-x: auto;
-            overflow-y: hidden;
+            overflow: auto; /* Zmiana z overflow-x: auto */
             white-space: nowrap;
             text-align: center;
+            /* Nowe reguły centrowania */
+            display: none; 
+            align-items: center;
+            justify-content: center;
         }
 		
 		/* STYLIZACJA PASKÓW PRZEWIJANIA DLA LIGHTBOXA */
@@ -252,15 +255,16 @@
 
         /* Styl tylko dla zdjęcia w powiększeniu */
         #lightbox-img {
-            height: 100vh !important;
-            width: auto !important;
-            max-width: none !important;
-            display: inline-block;
-            vertical-align: middle;
+            max-height: 100vh;
+            max-width: 100vw;
+            width: auto;
+            height: auto;
+            display: block;
             position: relative;
             z-index: 10001;
             transition: transform 0.2s ease-out;
             cursor: zoom-in;
+            margin: 0 auto;
         }
 
 		#lightbox-img.zoomed {
@@ -346,10 +350,10 @@
             .hero-content h1 { font-size: 2.5em; }
             .grid { grid-template-columns: 1fr; }
             .item img { height: auto; aspect-ratio: 3/2; }
-            nav { flex-direction: column; padding: 15px 5%; }
-            nav ul { margin-top: 15px; flex-wrap: wrap; justify-content: center; gap: 8px; }
+            nav { flex-direction: column; padding: 10px 2%; }
+            nav ul { margin-top: 15px; flex-wrap: nowrap; justify-content: center; gap: 4px; }
             nav ul li { margin: 0; }
-            nav ul li a { font-size: 0.95em; padding: 10px 15px; white-space: nowrap; }
+            nav ul li a { font-size: 0.75em; padding: 6px 8px; white-space: nowrap; }
         }
 		
 		/* NAPRAWA ZDJĘCIA W SEKCJI O MNIE */
@@ -965,119 +969,94 @@
 </section>
 
 <script>
-// --- FUNKCJE PODSTAWOWE LIGHTBOXA ---
+/* --- ZMODYFIKOWANA OBSŁUGA LIGHTBOXA (ZOOM + PAN) --- */
+    let scale = 1;
+    let pointX = 0;
+    let pointY = 0;
+    let startX = 0;
+    let startY = 0;
+    let isDragging = false;
+
     function openLightbox(element, fullSizeSrc) {
         const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
         
-        lbImg.src = fullSizeSrc;
-        lbImg.ondragstart = () => false;
-        lbImg.classList.remove('zoomed'); 
-        lightbox.style.display = 'block';
-        document.body.style.overflow = 'hidden'; 
+        // Reset parametrów
+        scale = 1;
+        pointX = 0;
+        pointY = 0;
         
-        // Wyśrodkowanie zdjęcia zaraz po otwarciu
-        lbImg.onload = function() {
-            lightbox.scrollLeft = (lbImg.offsetWidth - lightbox.clientWidth) / 2;
-            lightbox.scrollTop = (lbImg.offsetHeight - lightbox.clientHeight) / 2;
-        };
-
-        lightbox.style.overflow = 'auto'; // Zmienione z 'hidden' na 'auto', aby scroll działał od razu
+        lbImg.src = fullSizeSrc;
+        
+        // Ustawienie wyświetlania na flex przed obliczeniami
+        lightbox.style.display = 'flex'; 
+        updateTransform();
+        
+        document.body.style.overflow = 'hidden';
         lbImg.style.cursor = 'zoom-in';
     }
 
     function closeLightbox() {
-        const lightbox = document.getElementById('lightbox');
+        document.getElementById('lightbox').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function updateTransform() {
         const lbImg = document.getElementById('lightbox-img');
-        
-        lightbox.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Przywrócenie przewijania strony
-        
-        // Wyłączamy zoom jeśli był aktywny
-        if(lbImg.classList.contains('zoomed')) {
-            toggleZoom();
+        // Usunięcie translate(0,0) gdy nie ma zoomu poprawia centrowanie flexboxem
+        if (scale <= 1) {
+            lbImg.style.transform = `scale(${scale})`;
+        } else {
+            lbImg.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
         }
     }
 
-    // --- ZAAWANSOWANA OBSŁUGA ZOOM I PRZESUWANIA (DRAG) ---
-    let isDragging = false;
-    let startX, startY, scrollLeft, scrollTop;
-
-function toggleZoom(event) {
-    if (event) event.stopPropagation();
-    
-    const lbImg = document.getElementById('lightbox-img');
-    const lbContainer = document.getElementById('lightbox');
-    
-    const isZoomed = lbImg.classList.toggle('zoomed');
-
-    if (isZoomed) {
-        lbContainer.style.overflow = 'auto';
-        lbImg.style.cursor = 'grab';
-        
-        lbContainer.addEventListener('mousedown', startDragging);
-        window.addEventListener('mousemove', drag);
-        window.addEventListener('mouseup', stopDragging);
-        
-        // Wyśrodkowanie zdjęcia po włączeniu zooma
-        setTimeout(() => {
-            const scrollX = (lbImg.scrollWidth - lbContainer.clientWidth) / 2;
-            const scrollY = (lbImg.scrollHeight - lbContainer.clientHeight) / 2;
-            lbContainer.scrollTo({
-                left: scrollX,
-                top: scrollY,
-                behavior: 'smooth'
-            });
-        }, 10);
-
-    } else {
-        lbContainer.style.overflow = 'hidden';
-        lbImg.style.cursor = 'zoom-in';
-        // USUNIĘTO: lbImg.style.transform = 'scale(1)'; - to blokowało CSS
-        
-        lbContainer.removeEventListener('mousedown', startDragging);
-        window.removeEventListener('mousemove', drag);
-        window.removeEventListener('mouseup', stopDragging);
-        
-        lbContainer.scrollLeft = 0;
-        lbContainer.scrollTop = 0;
-    }
-}
-
-    function startDragging(e) {
-        const lbContainer = document.getElementById('lightbox');
-        const lbImg = document.getElementById('lightbox-img');
-        if (!lbImg.classList.contains('zoomed')) return;
-        
-        isDragging = true;
-        lbImg.style.cursor = 'grabbing';
-        
-        startX = e.pageX - lbContainer.offsetLeft;
-        startY = e.pageY - lbContainer.offsetTop;
-        scrollLeft = lbContainer.scrollLeft;
-        scrollTop = lbContainer.scrollTop;
-    }
-
-    function stopDragging() {
-        isDragging = false;
-        const lbImg = document.getElementById('lightbox-img');
-        if (lbImg && lbImg.classList.contains('zoomed')) lbImg.style.cursor = 'grab';
-    }
-
-    function drag(e) {
-        if (!isDragging) return;
+    // --- ZOOM ROLKĄ ---
+    document.getElementById('lightbox').addEventListener('wheel', function(e) {
         e.preventDefault();
+        const lbImg = document.getElementById('lightbox-img');
         
-        const lbContainer = document.getElementById('lightbox');
-        const x = e.pageX - lbContainer.offsetLeft;
-        const y = e.pageY - lbContainer.offsetTop;
-        
-        const walkX = (x - startX) * 1.5; 
-        const walkY = (y - startY) * 1.5;
-        
-        lbContainer.scrollLeft = scrollLeft - walkX;
-        lbContainer.scrollTop = scrollTop - walkY;
-    }
+        const delta = e.deltaY * -0.001;
+        const newScale = Math.min(Math.max(1, scale + delta), 5); // Max 5x zoom
+
+        if (newScale !== scale) {
+            scale = newScale;
+            if (scale <= 1) {
+                pointX = 0;
+                pointY = 0;
+                lbImg.style.cursor = 'zoom-in';
+            } else {
+                lbImg.style.cursor = 'grab';
+            }
+            updateTransform();
+        }
+    }, { passive: false });
+
+    // --- PRZESUWANIE (PANNING) LEWYM PRZYCISKIEM ---
+    const lbImg = document.getElementById('lightbox-img');
+
+    lbImg.addEventListener('mousedown', function(e) {
+        if (scale <= 1 || e.button !== 0) return; // Tylko lewy przycisk i tylko gdy jest zoom
+        isDragging = true;
+        startX = e.clientX - pointX;
+        startY = e.clientY - pointY;
+        lbImg.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        pointX = e.clientX - startX;
+        pointY = e.clientY - startY;
+        updateTransform();
+    });
+
+    window.addEventListener('mouseup', function() {
+        isDragging = false;
+        if (scale > 1) lbImg.style.cursor = 'grab';
+    });
+
+    // Zapobieganie domyślnemu przeciąganiu obrazka
+    lbImg.ondragstart = () => false;
 	
     // --- FILTROWANIE GALERII ---
     function filterGallery(category, btn) {
